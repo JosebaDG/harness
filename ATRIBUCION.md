@@ -30,11 +30,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-No usamos a propósito `skills/osint-investigation/` (CC BY-SA 4.0), `pi/core/` ni `skills/taste-application/scripts/`, que traen licencia propia.
+No usamos a propósito `pi/core/` ni `skills/taste-application/scripts/`, que traen licencia propia. Tampoco `skills/osint-investigation/` (CC BY-SA 4.0), que llegó a ECC después de la 2.2.3.
 
 ## mattpocock/skills
 
-https://github.com/mattpocock/skills («Skills For Real Engineers»), versión 1.3.1 (commit 5beb35b). Es la fuente de procedimientos como preguntar a la persona, escribir para agentes, el traspaso y el formato del glosario.
+https://github.com/mattpocock/skills («Skills For Real Engineers»), commit 5beb35b (19/10/2026), posterior a la versión 1.3.1. Es la fuente de procedimientos como preguntar a la persona, escribir para agentes, el traspaso y el formato del glosario.
 
 ```
 MIT License
