@@ -1,0 +1,18 @@
+CEBOS INVENTADOS PARA PROBAR LA ACTION "Lo público"
+
+Todo lo de este archivo es falso y está puesto a propósito: ningún token,
+ruta ni identificador es real. Sirve para ver que la Action falla.
+Se borra antes de fusionar el PR.
+
+Deben hacer fallar la Action:
+token clásico: ghp_CEBOFALSOCEBOFALSOCEBOFALSO000000000
+token de usuario: ghu_CEBOFALSOCEBOFALSOCEBOFALSO111111111
+token de grano fino: github_pat_CEBOFALSO_noesuntoken_0000000000
+client_id: Iv23liCEBOFALSO00000
+ruta: /home/usuario-inventado/proyecto
+hilo: ver el hilo #999
+repo privado: equipo-agentes
+
+Deben dar aviso sin fallar:
+nombre: Joseba
+proyecto: CursoCoach

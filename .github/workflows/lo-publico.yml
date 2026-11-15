@@ -1,0 +1,76 @@
+# Revisa que nada de lo que entra en este repo público deba quedarse fuera.
+#
+# Falla si encuentra tokens, client_id de GitHub Apps, rutas de máquina,
+# números de hilo internos o el nombre del repo privado del equipo.
+# Avisa sin fallar si encuentra nombres que conviene revisar a mano.
+#
+# Los patrones están escritos con clases de caracteres (por ejemplo [o]) para
+# que este archivo no se detecte a sí mismo: así también se revisa.
+# Nunca imprime lo encontrado, solo el archivo y la línea, por si es un secreto.
+
+name: Lo público
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Buscar lo que no puede ser público
+        shell: bash
+        run: |
+          set -u
+          fallos=0
+          avisos=0
+
+          # $1 = error | warning, $2 = descripción, $3 = patrón ERE, $4... = opciones de git grep
+          revisa() {
+            local nivel=$1 desc=$2 patron=$3
+            shift 3
+            local salida rc
+            salida=$(git grep -n -I -E "$@" -e "$patron" -- .)
+            rc=$?
+            if [ $rc -gt 1 ]; then
+              echo "::error::git grep no pudo revisar: $desc"
+              fallos=$((fallos + 1))
+              return
+            fi
+            [ $rc -eq 1 ] && return
+            while IFS= read -r linea; do
+              archivo=${linea%%:*}
+              resto=${linea#*:}
+              num=${resto%%:*}
+              echo "::$nivel file=$archivo,line=$num::$desc"
+              echo "- $nivel · \`$archivo:$num\` · $desc" >> "$GITHUB_STEP_SUMMARY"
+              if [ "$nivel" = error ]; then fallos=$((fallos + 1)); else avisos=$((avisos + 1)); fi
+            done <<< "$salida"
+          }
+
+          echo "### Lo público" >> "$GITHUB_STEP_SUMMARY"
+
+          # Bloquean
+          revisa error "Token clásico de GitHub (gh*_)" 'gh[pousr][_][A-Za-z0-9]{36}'
+          revisa error "Token de grano fino de GitHub" 'github[_]pat[_][A-Za-z0-9_]{22,}'
+          revisa error "client_id de una GitHub App" '(Iv2[3]li[A-Za-z0-9]{4,}|Iv1[.][a-f0-9]{16})'
+          revisa error "Ruta de una máquina" '/(ho[m]e|User[s])/[A-Za-z0-9._-]+'
+          revisa error "Número de hilo interno" 'hil[o][[:space:]]*#[0-9]+' -i
+          revisa error "Mención al repo privado del equipo" 'equip[o][-_ ]agentes' -i
+
+          # Avisan sin fallar: revisar a mano
+          revisa warning "Nombre de persona: revisar si debe ser público" 'Jose[b]a' -w
+          revisa warning "Nombre de proyecto privado: revisar si debe ser público" 'Curso[C]oach' -i
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Bloqueos: $fallos · Avisos: $avisos" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$fallos" -gt 0 ]; then
+            echo "::error::Hay $fallos líneas que no pueden ser públicas. Quítalas antes de fusionar."
+            exit 1
+          fi
