@@ -1,0 +1,49 @@
+# Pruebas de las herramientas en cada PR, sin red ni secretos:
+# - compila todos los .py del repo;
+# - pasa equipo.py --prueba sin config (solo enseña la ayuda y no envía nada);
+# - pasa las pruebas sin red de equipo.py (config y filtro de material externo);
+# - comprueba que prueba-web.py arranca y enseña su ayuda.
+
+name: Pruebas
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'prueba/**']
+
+permissions:
+  contents: read
+
+jobs:
+  herramientas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compilar los .py
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t archivos < <(git ls-files '*.py')
+          echo "Archivos: ${#archivos[@]}"
+          [ "${#archivos[@]}" -gt 0 ] || exit 0
+          python -m py_compile "${archivos[@]}"
+
+      - name: equipo.py --prueba
+        shell: bash
+        env:
+          EQUIPO_CFG: ${{ runner.temp }}/sin-config.json
+          EQUIPO_ESTADO: ${{ runner.temp }}/estado.json
+        run: |
+          set -euo pipefail
+          python herramientas/equipo.py --prueba | head -n 3
+
+      - name: Pruebas sin red de equipo.py
+        run: python herramientas/pruebas/prueba_equipo.py
+
+      - name: prueba-web.py arranca
+        run: python herramientas/prueba-web.py --help > /dev/null
