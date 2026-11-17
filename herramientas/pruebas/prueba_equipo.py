@@ -65,20 +65,20 @@ comprueba("TE TOCA si el último no es mío", [l.split(" #")[0] for l in eq.line
 comprueba("SIGUES TÚ si me quedé el turno", [l.split(" #")[0] for l in eq.lineas_turno(hilo("Ana", "Ana"), "Ana")], ["SIGUES TÚ"])
 comprueba("nada si el turno es de otro", eq.lineas_turno(hilo("Bruno", "Ana"), "Ana"), [])
 
-ci = dict(c, ciclo={"Ana": 15, "Bruno": 30, "horas": [9, 12, 15], "zona": "Europe/Madrid"})
-madrid = lambda s: calendar.timegm(time_.strptime(s, "%Y-%m-%dT%H:%M")) - 3600   # noviembre: UTC+1
-ahora = madrid("2026-11-16T15:31")
+ci = dict(c, ciclo={"Ana": 10, "Bruno": 40, "horas": [8, 14], "zona": "UTC"})
+utc = lambda s: calendar.timegm(time_.strptime(s, "%Y-%m-%dT%H:%M"))
+ahora = utc("2026-11-16T14:41")
 anterior = eq.anterior_del_ciclo(ci, "Bruno", ahora)
-comprueba("el anterior de Bruno es Ana, desde las 15:15 de Madrid", anterior, ("Ana", madrid("2026-11-16T15:15")))
+comprueba("el anterior de Bruno es Ana, desde las 14:10", anterior, ("Ana", utc("2026-11-16T14:10")))
 comprueba("el primero del ciclo no espera a nadie", eq.anterior_del_ciclo(ci, "Ana", ahora), None)
 comprueba("sin ciclo en la config no hay espera", eq.anterior_del_ciclo(c, "Bruno", ahora), None)
 comprueba("antes de la primera hora del día vale la última de ayer",
-          eq.anterior_del_ciclo(ci, "Bruno", madrid("2026-11-17T08:00")), ("Ana", madrid("2026-11-16T15:15")))
-viejo = firmado("Ana", "2026-11-16T14:10:00Z")    # 15:10 en Madrid, antes de su hora
-nuevo = firmado("Ana", "2026-11-16T14:20:00Z")    # 15:20 en Madrid, después de su hora
+          eq.anterior_del_ciclo(ci, "Bruno", utc("2026-11-17T07:00")), ("Ana", utc("2026-11-16T14:10")))
+viejo = firmado("Ana", "2026-11-16T14:05:00Z")    # antes de su hora (14:10)
+nuevo = firmado("Ana", "2026-11-16T14:20:00Z")    # después de su hora
 esp = lambda h: [l.split(" #")[0] for l in eq.lineas_turno(h, "Bruno", anterior)]
-comprueba("ESPERA ÚNICA: turno de Ana y Ana sin escribir desde las :15", esp(hilo("Ana", "Ana", [viejo])), ["ESPERA ÚNICA"])
-comprueba("sin ESPERA ÚNICA si Ana ya escribió después de las :15", esp(hilo("Ana", "Ana", [viejo, nuevo])), [])
+comprueba("ESPERA ÚNICA: turno de Ana y Ana sin escribir desde su hora", esp(hilo("Ana", "Ana", [viejo])), ["ESPERA ÚNICA"])
+comprueba("sin ESPERA ÚNICA si Ana ya escribió después de su hora", esp(hilo("Ana", "Ana", [viejo, nuevo])), [])
 comprueba("sin ESPERA ÚNICA si el turno es de otro", esp(hilo("Lucia", "Ana", [viejo])), [])
 comprueba("lo externo que imita a Ana no cuenta como escrito",
           esp(hilo("Ana", "Externo", [viejo, nuevo], propio=[True, False])), ["ESPERA ÚNICA"])

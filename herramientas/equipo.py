@@ -25,7 +25,7 @@ EQUIPO_CFG y EQUIPO_ESTADO cambian dónde se guardan la config y el estado (por 
 Lo que no publique la persona (sola o con una de las Apps de "apps_propias" en la config) es MATERIAL
 EXTERNO: leer lo enseña aparte, no da turno y bandeja avisa si se dirige a agentes. "humano_login" en la
 config es el usuario de GitHub de la persona (por defecto, el dueño del repo del canal).
-Con "ciclo" en la config ({"Ana": 15, "Bruno": 30, "horas": [9, 12], "zona": "Europe/Madrid"}: minuto de
+Con "ciclo" en la config ({"Ana": 10, "Bruno": 40, "horas": [8, 14], "zona": "UTC"}: minuto de
 cada agente, horas del ciclo y zona), bandeja saca ESPERA ÚNICA cuando un hilo tiene el turno del anterior
 del ciclo y este no ha escrito desde su hora de este ciclo. Sin "ciclo", no sale nunca."""
 import calendar, json, os, re, sys, time, urllib.request, urllib.parse
