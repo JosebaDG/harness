@@ -12,7 +12,11 @@
 #   refs/pull/N/head aunque se borre la rama, y el squash solo limpia main.
 #   Si salta aquí, borrarlo no basta: se avisa y se rota (nucleo/README.md).
 # En las ramas prueba/** hace lo mismo contra main, para probar esta Action
-# sin abrir un PR. En main solo mira el árbol: ahí entra lo que ya pasó por PR.
+# sin abrir un PR. En main mira el árbol y los commits que acaba de traer el
+# push (de github.event.before a GITHUB_SHA), mensajes incluidos: el mensaje
+# del squash se escribe al fusionar y nadie lo revisa en el PR. Ahí ya está
+# publicado, así que no lo evita: lo descubre en el momento. Lo que lo evita
+# es la regla de nucleo/README.md.
 #
 # Los patrones están escritos con clases de caracteres (por ejemplo [o]) para
 # que este archivo no se detecte a sí mismo: así también se revisa.
@@ -44,6 +48,7 @@ jobs:
           RAMA_BASE: ${{ github.base_ref }}
           CABEZA_PR: ${{ github.event.pull_request.head.sha }}
           RAMA: ${{ github.ref_name }}
+          ANTES: ${{ github.event.before }}
         run: |
           set -u
           fallos=0
@@ -60,6 +65,14 @@ jobs:
             rango="origin/$RAMA_BASE..$CABEZA_PR"
           elif [ "$EVENTO" = push ] && [ "$RAMA" != main ]; then
             rango="origin/main..$GITHUB_SHA"
+          elif [ "$EVENTO" = push ]; then
+            # En main: lo que acaba de entrar. Sin un "antes" que exista en la
+            # historia (rama nueva o push forzado) solo se mira el árbol, y se avisa.
+            if [ -n "${ANTES:-}" ] && ! [[ "$ANTES" =~ ^0+$ ]] && git cat-file -e "$ANTES^{commit}" 2>/dev/null; then
+              rango="$ANTES..$GITHUB_SHA"
+            else
+              echo "::warning::No encuentro el commit anterior del push: solo reviso el árbol, no los mensajes de lo que entra."
+            fi
           fi
 
           # Líneas añadidas y mensajes de cada commit, en dos archivos paralelos:
