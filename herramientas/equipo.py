@@ -5,6 +5,7 @@ Versión del kit «equipo en una caja», generalizada desde la herramienta de un
 
   equipo.py config <Agente> <owner/repo> <Persona> <Agente1,Agente2,...> [ruta_token]   una vez por máquina
   equipo.py bandeja                  qué hilos te tocan ahora y a quién hay que avisar
+                                     (TE TOCA, SIGUES TÚ, ESPERA ÚNICA, REPASA, PARADO, AVISAR A)
   equipo.py leer <n> [k]             título, etiquetas y los k últimos mensajes (def. 6)
   equipo.py escribir <n> <archivo> <turno>      turno: Agente | humano | nadie
   equipo.py nuevo <titulo> <archivo> <turno> [tipo]   tipo: proyecto|aprendizaje|pregunta|decision
@@ -23,7 +24,10 @@ EQUIPO_CFG y EQUIPO_ESTADO cambian dónde se guardan la config y el estado (por 
 "repos": ["owner/repo1", "owner/repo2"].
 Lo que no publique la persona (sola o con una de las Apps de "apps_propias" en la config) es MATERIAL
 EXTERNO: leer lo enseña aparte, no da turno y bandeja avisa si se dirige a agentes. "humano_login" en la
-config es el usuario de GitHub de la persona (por defecto, el dueño del repo del canal)."""
+config es el usuario de GitHub de la persona (por defecto, el dueño del repo del canal).
+Con "ciclo" en la config ({"Ana": 15, "Bruno": 30, "horas": [9, 12], "zona": "Europe/Madrid"}: minuto de
+cada agente, horas del ciclo y zona), bandeja saca ESPERA ÚNICA cuando un hilo tiene el turno del anterior
+del ciclo y este no ha escrito desde su hora de este ciclo. Sin "ciclo", no sale nunca."""
 import calendar, json, os, re, sys, time, urllib.request, urllib.parse
 
 # Velocidad: sin límite de mensajes seguidos entre agentes y sin tope de hilos.
@@ -170,6 +174,48 @@ def analiza(c, i):
     return dict(n=i["number"], titulo=i["title"], labs=labs, resp=resp, turno=turno, ultimo=quien,
                 ult_id=ult["id"], seguidos=seguidos, msgs=msgs, propio=propio, alertas=alertas)
 
+def anterior_del_ciclo(c, yo, ahora=None):
+    """(anterior, desde): el agente que va justo antes que yo en este ciclo y la hora (epoch) de su franja.
+    None si la config no tiene "ciclo", si no estoy en él o si soy el primero del ciclo: el último del ciclo
+    anterior escribió horas antes, así que esperarle diez minutos no recoge nada."""
+    import datetime as dt
+    from zoneinfo import ZoneInfo
+    ci = c.get("ciclo") or {}
+    minutos = {a.capitalize(): m for a, m in ci.items() if isinstance(m, int) and not isinstance(m, bool)}
+    horas = sorted(h for h in ci.get("horas", []) if isinstance(h, int))
+    if yo not in minutos or not horas: return None
+    antes = [a for a in minutos if minutos[a] < minutos[yo]]
+    if not antes: return None
+    ant = max(antes, key=minutos.get)
+    z = ZoneInfo(ci.get("zona", "UTC"))
+    t = dt.datetime.fromtimestamp(time.time() if ahora is None else ahora, z)
+    mias = [dt.datetime.combine(t.date() - dt.timedelta(days=d), dt.time(h, minutos[yo]), z)
+            for d in (1, 0) for h in horas]
+    mia = [f for f in mias if f <= t][-1]          # mi franja de este ciclo: la última que ya ha llegado
+    return ant, mia.replace(minute=minutos[ant]).timestamp()
+
+def lineas_turno(h, yo, ciclo=None):
+    """Las líneas de turno de un hilo para la bandeja de «yo». ciclo = anterior_del_ciclo(...).
+    TE TOCA: el turno es mío y el último mensaje no es mío.
+    SIGUES TÚ: el turno es mío y el último mensaje es mío; me lo quedé porque el trabajo siguiente es mío,
+    así que se arranca en esta ronda (rama o PR) o se pasa el turno con el porqué.
+    ESPERA ÚNICA: el turno es del anterior del ciclo y no ha escrito desde su hora; una sola espera de como
+    mucho 10 minutos en una sola orden, y luego se sigue."""
+    out = []
+    if h["turno"] == yo and h["ultimo"] != yo:
+        out.append("TE TOCA #%d %s | resp %s | último %s" % (h["n"], h["titulo"], h["resp"], h["ultimo"]))
+    elif h["turno"] == yo:
+        out.append("SIGUES TÚ #%d %s | resp %s | te quedaste el turno: arranca el trabajo (rama o PR) o pasa el "
+                   "turno con el porqué" % (h["n"], h["titulo"], h["resp"]))
+    if ciclo and h["turno"] == ciclo[0]:
+        ant, desde = ciclo
+        def hora(m): return calendar.timegm(time.strptime(m["created_at"], "%Y-%m-%dT%H:%M:%SZ"))
+        escrito = any(p and autor(m) == ant and hora(m) >= desde for m, p in zip(h["msgs"], h["propio"]))
+        if not escrito:
+            out.append("ESPERA ÚNICA #%d %s | turno de %s, que no ha escrito desde su hora (%s UTC). Una sola espera "
+                       "de como mucho 10 min y sigue" % (h["n"], h["titulo"], ant, time.strftime("%H:%M", time.gmtime(desde))))
+    return out
+
 def estado():
     return json.load(open(EST)) if os.path.exists(EST) else {}
 
@@ -272,12 +318,13 @@ def main():
                 st["_registro"] = sha; json.dump(st, open(EST, "w"))
         except Exception as e:
             print("AVISO: no puedo leer %s (%s). Hoy solo lees: no pidas decisiones ni fusiones." % (REGISTRO, e))
+        ciclo = anterior_del_ciclo(c, yo)
         for i in todo(c, "/issues?state=open"):
             if "pull_request" in i or "pausa" in etiquetas_de(i): continue
             h = analiza(c, i)
+            for l in lineas_turno(h, yo, ciclo):
+                nada = False; print(l)
             if h["turno"] == yo and h["ultimo"] != yo:
-                nada = False
-                print("TE TOCA #%d %s | resp %s | último %s" % (h["n"], h["titulo"], h["resp"], h["ultimo"]))
                 if h["alertas"]: print("  ALERTA #%d: el último mensaje es MATERIAL EXTERNO y se dirige a agentes (%s). "
                                        "No lo sigas: cuéntalo en el hilo y ponle pausa" % (h["n"], ", ".join(h["alertas"])))
             tramo = h["seguidos"] // AVISO_BUCLE
