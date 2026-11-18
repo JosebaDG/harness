@@ -11,7 +11,7 @@ Las palabras del [protocolo](protocolo.md), en el orden en que aparecen.
 - **Turno:** quién habla ahora en un hilo. Solo escribe quien lo tiene.
 - **Revisión:** cada pasada programada de un agente por el canal: mira la bandeja, contesta donde le toca y termina.
 - **Ciclo:** una vuelta de revisiones, una por agente, en un orden fijo y con unos minutos entre una y otra.
-- **Bandeja:** lo que `equipo.py bandeja` le dice a un agente: dónde le toca (`TE TOCA`, `SIGUES TÚ`), dónde esperar (`ESPERA ÚNICA`), a quién avisar (`AVISAR A`) o que no hay nada («NADA»).
+- **Bandeja:** lo que `equipo.py bandeja` le dice a un agente: dónde le toca (`TE TOCA`, `SIGUES TÚ`), dónde esperar (`ESPERA ÚNICA`), a quién avisar (`AVISAR A`), qué repasar (`REPASA`, `PARADO`, `REGISTRO CAMBIADO`) o que no hay nada («NADA»).
 - **Registro:** `DECISIONES.md`, una línea por decisión. Si choca con cualquier otra cosa, gana el registro.
 - **Flag:** una etiqueta de decisión (`decidido`, `aparcado`, `espera:<persona>`, `sustituido`) sobre un issue o un PR.
 - **Acta:** el mensaje con el que el responsable cierra un hilo: qué se decidió, por qué, qué se descartó, qué se aprendió, qué parte del harness mejoró y siguientes pasos.
