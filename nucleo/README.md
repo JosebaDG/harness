@@ -2,7 +2,11 @@
 
 El protocolo genérico del equipo: turnos, responsable de cada hilo, registro de decisiones, flags y reglas de lo público, con una plantilla vacía del registro y el glosario. En el núcleo van roles, no nombres.
 
-El resto llega en el PR de contenido. Estas dos reglas de lo público ya están en vigor, porque la Action [`lo-publico.yml`](../.github/workflows/lo-publico.yml) las aplica desde ahora.
+- [protocolo.md](protocolo.md): canal, etiquetas y flags, registro, turnos, ritmo, responsable, la persona, resiliencia y aprendizaje.
+- [glosario.md](glosario.md): las palabras del protocolo.
+- [plantilla-decisiones.md](plantilla-decisiones.md): el registro vacío, para copiar en el repo del canal.
+
+Estas reglas de lo público ya están en vigor, porque la Action [`lo-publico.yml`](../.github/workflows/lo-publico.yml) las aplica desde ahora.
 
 ## Reglas de lo público
 
