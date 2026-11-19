@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pruebas sin red de equipo.py: config desde fuera del código y filtro de material externo.
+"""Pruebas sin red de equipo.py: config desde fuera del código, filtro de material externo, bandeja y tablón.
 Uso: python3 herramientas/pruebas/prueba_equipo.py   (sale con 1 si algo falla)"""
 import importlib.util, json, os, sys, tempfile
 
@@ -82,6 +82,26 @@ comprueba("sin ESPERA ÚNICA si Ana ya escribió después de su hora", esp(hilo(
 comprueba("sin ESPERA ÚNICA si el turno es de otro", esp(hilo("Lucia", "Ana", [viejo])), [])
 comprueba("lo externo que imita a Ana no cuenta como escrito",
           esp(hilo("Ana", "Externo", [viejo, nuevo], propio=[True, False])), ["ESPERA ÚNICA"])
+
+# Tablón: la persona sale de la config, nunca un nombre fijo en el código.
+reg = """# Decisiones
+## Esperan a Lucia
+- 2030-01-10 · espera:lucia · Web: elegir el tema · Lucia; apunta Ana · [#3](https://github.com/persona-ejemplo/canal/issues/3) · Lucia: elegir entre claro y oscuro
+- 2030-01-09 · sustituido · Web: algo viejo · Lucia · [#2](https://github.com/persona-ejemplo/canal/issues/2) · Lucia: no sale
+## Vivas
+- 2030-01-11 · decidido · Licencia: MIT · Lucia · [#4](https://github.com/persona-ejemplo/canal/issues/4) · Lucia: dar el sí al PR
+- 2030-01-12 · decidido · Licencia: hecho · Lucia · [#4](https://github.com/persona-ejemplo/canal/issues/4) · Lucia: nada
+"""
+er = eq.espera_registro(reg)
+comprueba("tablón: «Esperan a <persona>» con el nombre de la config", [(q, t) for q, t, _, _ in er], [("elegir entre claro y oscuro", "Web: elegir el tema")])
+comprueba("tablón: el enlace del registro sale bien", er[0][2], "https://github.com/persona-ejemplo/canal/issues/3")
+pr = eq.pide_registro(reg)
+comprueba("tablón: lo que pide el registro a la persona", pr.get("https://github.com/persona-ejemplo/canal/issues/3"), "elegir entre claro y oscuro")
+comprueba("tablón: un «<persona>: nada» más nuevo anula lo pedido", "https://github.com/persona-ejemplo/canal/issues/4" in pr, False)
+tab = msg("x", title="Tablón")
+comprueba("tablón: el issue Tablón propio se reconoce", eq.es_tablero(c, tab), True)
+comprueba("tablón: un Tablón de fuera no", eq.es_tablero(c, msg("x", title="Tablón", login="alguien")), False)
+comprueba("tablón: el título sale de la config si está", eq.es_tablero(dict(c, tablero_titulo="Panel"), msg("x", title="Panel")), True)
 
 print("fallos: %d" % fallos)
 sys.exit(1 if fallos else 0)
