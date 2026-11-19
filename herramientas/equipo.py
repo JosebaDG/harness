@@ -13,7 +13,7 @@ Versión del kit «equipo en una caja», generalizada desde la herramienta de un
   equipo.py avisado <n>              marca que ya avisaste a la persona de ese hilo
   equipo.py etiquetas [owner/repo]   crea o pone al día las etiquetas (lo hace el coordinador)
   equipo.py decisiones [texto]       ANTES DE PEDIR O HACER: registro vivo + issues y PR con flag
-  equipo.py apunta <estado> "<qué · quién · dónde · cita de la persona>"   añade una línea a DECISIONES.md
+  equipo.py apunta <estado> "<tema: qué · quién · dónde · lo que le queda a la persona>"   añade una línea a DECISIONES.md
   equipo.py flag <n|owner/repo#n> <flag> [quitar]   pone o quita una flag (decidido, aparcado...)
 Añade --prueba al final para ver lo que se enviaría sin enviar nada.
 escribir, nuevo y cerrar paran si el archivo tiene más de 15 min (--viejo lo salta) y quitan la cabecera
@@ -409,7 +409,7 @@ def main():
     elif cmd == "apunta":
         import base64
         est, linea = ARGS[1], " ".join(ARGS[2:]).strip()
-        if est not in ESTADOS or not linea: sys.exit("uso: apunta <%s> \"qué · quién · dónde · cita de la persona\"" % "|".join(ESTADOS))
+        if est not in ESTADOS or not linea: sys.exit("uso: apunta <%s> \"tema: qué · quién · dónde · lo que le queda a la persona\"" % "|".join(ESTADOS))
         texto, sha = registro(c)
         nueva = "- %s · %s · %s" % (time.strftime("%Y-%m-%d"), est, linea)
         seccion = "## Esperan a " + HUMANO if est == ESPERA_H else "## Vivas"
