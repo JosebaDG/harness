@@ -15,6 +15,7 @@ Versión del kit «equipo en una caja», generalizada desde la herramienta de un
   equipo.py decisiones [texto]       ANTES DE PEDIR O HACER: registro vivo + issues y PR con flag
   equipo.py apunta <estado> "<tema: qué · quién · dónde · lo que le queda a la persona>"   añade una línea a DECISIONES.md
   equipo.py flag <n|owner/repo#n> <flag> [quitar]   pone o quita una flag (decidido, aparcado...)
+  equipo.py tablero                  reescribe el issue «Tablón»: lo de la persona, lo parado y los proyectos
 Añade --prueba al final para ver lo que se enviaría sin enviar nada.
 escribir, nuevo y cerrar paran si el archivo tiene más de 15 min (--viejo lo salta) y quitan la cabecera
 y la firma escritas a mano, porque ya las ponen ellos.
@@ -297,6 +298,201 @@ def objetivo(c, ref):
         repo, n = ref.split("#"); return "https://api.github.com/repos/%s/issues/%s" % (repo, n), ref
     return "https://api.github.com/repos/%s/issues/%s" % (c["repo"], ref), "%s#%s" % (c["repo"], ref)
 
+# Tablón: un issue fijado que se reescribe solo. Mismo código que bandeja y decisiones, sin cálculo aparte.
+TABLERO = "Tablón"        # título por defecto del issue que reescribe `tablero` (config: "tablero_titulo"); bandeja no lo trata como hilo
+# Repos del tablón: el del canal y los de "tablero_repos" en la config ("owner/repo" o solo "repo" del mismo dueño).
+MAX_HUMANO, MAX_PARADO = 5, 8
+NO_ACTIVO = ["aparcado", "sustituido", "pausa"]
+
+def es_tablero(c, i): return i.get("title") == c.get("tablero_titulo", TABLERO) and "pull_request" not in i and es_propio(c, i)
+
+def _seg(iso): return calendar.timegm(time.strptime(iso, "%Y-%m-%dT%H:%M:%SZ"))
+
+def hace(iso):
+    s = max(0, time.time() - _seg(iso))
+    if s < 3600: return "hace %d min" % (s // 60)
+    if s < 2 * 86400: return "hace %d h" % (s // 3600)
+    return "hace %d días" % (s // 86400)
+
+def _ref(c, i):
+    repo = i["repository_url"].split("/repos/")[1]
+    corto = "#%d" % i["number"] if repo == c["repo"] else "%s#%d" % (repo.split("/")[1], i["number"])
+    return "[%s](%s)" % (corto, i["html_url"])
+
+def _titulo(c, i, n=70):
+    """Lo externo no se copia: un título de fuera es material, no texto del equipo."""
+    if not es_propio(c, i): return "(%s de fuera; ábrelo para leerlo)" % ("PR" if "pull_request" in i else "issue")
+    t = re.sub(r"\s+", " ", i["title"]).strip()
+    return t if len(t) <= n else t[:n - 1].rstrip() + "…"
+
+def _mueve(c, i, h=None):
+    """Quién lo mueve: el turno de bandeja en el canal; fuera, la etiqueta turno: o el agente del título o la firma."""
+    if h: return h["turno"] or h["resp"]
+    t = valor(etiquetas_de(i), "turno:")
+    if t: return t
+    m = re.search(r"\((%s)\)" % "|".join(map(re.escape, AGENTES)), i.get("title") or "") if AGENTES else None
+    if m: return m.group(1)
+    a = autor(i) if es_propio(c, i) else "?"
+    return a if a in AGENTES else None
+
+def _espera(labs): return any(l in ESPERA for l in labs)
+
+def _limpia(u): return u.split("#")[0].rstrip("/")
+
+def espera_registro(texto):
+    """Líneas vivas de «## Esperan a <persona>» en DECISIONES.md: (qué hacer, tema, enlace, urls citadas)."""
+    out, dentro = [], False
+    for l in texto.splitlines():
+        if l.startswith("## "): dentro = l.strip() == "## Esperan a " + HUMANO; continue
+        if not dentro or not l.startswith("- ") or "· sustituido" in l: continue
+        partes = l[2:].split(" · ")
+        que = re.split(re.escape(HUMANO) + r":\s*", l)[-1].strip() if HUMANO + ":" in l else "decidir"
+        urls = re.findall(r"\]\((https://github\.com/[^)\s]+)\)", l)
+        donde = re.findall(r"\]\((https://github\.com/[^)\s]+)\)", partes[-2] if len(partes) > 1 else "")
+        tema = partes[2].strip() if len(partes) > 2 else "Registro"
+        out.append((que, tema, (donde or urls or [None])[0], [_limpia(u) for u in urls]))
+    return out
+
+def pide_registro(texto):
+    """Lo último que el registro pide a la persona sobre cada hilo, en cualquier sección: {url limpia: qué hacer}.
+    Sirve para que un hilo con espera:<persona> diga qué hacer y no un «Contestar» genérico."""
+    mejor = {}
+    for l in texto.splitlines():
+        m = re.match(r"- (\d{4}-\d{2}-\d{2}) ·", l)
+        if not m or "· sustituido" in l or HUMANO + ":" not in l: continue
+        que = re.split(re.escape(HUMANO) + r":\s*", l)[-1].strip().rstrip(".")
+        if not que: continue
+        nada = bool(re.match(r"nada\b", que, re.I))   # un «<persona>: nada» más nuevo anula lo pedido antes
+        for u in re.findall(r"\]\((https://github\.com/[^)\s]+)\)", l):
+            u = _limpia(u)
+            if u not in mejor or m.group(1) > mejor[u][0]: mejor[u] = (m.group(1), None if nada else que)
+    return {u: q for u, (_, q) in mejor.items() if q}
+
+def _corta(t, n=90):
+    t = re.sub(r"\s+", " ", re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", t)).strip()
+    return t if len(t) <= n else t[:n - 1].rstrip() + "…"
+
+def cuerpo_tablero(c):
+    """Devuelve (cuerpo, número del issue Tablón o None). Solo lee."""
+    dueno = c["repo"].split("/")[0]; humano = c.get("humano_login", dueno)
+    repos = [r if "/" in r else dueno + "/" + r for r in c.get("tablero_repos", [])]
+    if c["repo"] not in repos: repos.insert(0, c["repo"])
+    avisos, items, info, num = [], {}, {}, None
+    for r in repos:
+        try:
+            items[r] = todo(c, "https://api.github.com/repos/%s/issues?state=open" % r)
+            info[r], _ = api(c, "GET", "https://api.github.com/repos/" + r)
+        except urllib.error.HTTPError as e:
+            avisos.append("No pude leer %s (%s): no sale en el tablón." % (r, e.code)); items[r] = []
+    for i in items.get(c["repo"], []):
+        if es_tablero(c, i): num = i["number"]
+    items[c["repo"]] = [i for i in items.get(c["repo"], []) if not es_tablero(c, i)]
+    hilos = {}          # en el canal, el turno sale de analiza(), lo mismo que ve bandeja
+    for i in items.get(c["repo"], []):
+        if "pull_request" not in i: hilos[i["html_url"]] = analiza(c, i)
+    todos = [i for r in repos for i in items[r]]
+
+    # 1) Te toca a la persona: el registro primero (dice qué hacer), luego flags, el turno de la persona y PR que piden su revisión
+    pide_h, citadas, pide_reg = [], set(), {}
+    try:
+        texto, _ = registro(c)
+        pide_reg = pide_registro(texto)
+        for que, tema, url, urls in espera_registro(texto):
+            citadas.update(urls)
+            enl = "[registro](https://github.com/%s/blob/main/%s#esperan-a-%s)" % (c["repo"], REGISTRO, H)
+            if url:
+                corto = re.sub(r"^https://github\.com/", "", _limpia(url)).replace("/issues/", "#").replace("/pull/", "#")
+                enl = "[%s](%s)" % (corto.replace(c["repo"], "").split("/")[-1] if corto.startswith(c["repo"] + "#") else corto.split("/", 1)[-1], url)
+            pide_h.append(("0", "- **%s** — %s · %s" % (_corta(que[:1].upper() + que[1:], 70), _corta(tema, 70), enl)))
+    except Exception as e:
+        avisos.append("No pude leer %s (%s): faltan sus pendientes." % (REGISTRO, e))
+    try:
+        q = urllib.parse.quote("user:%s is:open is:pr review-requested:%s" % (dueno, humano))
+        revisar = api(c, "GET", "https://api.github.com/search/issues?per_page=50&q=" + q)[0].get("items", [])
+    except urllib.error.HTTPError as e:
+        avisos.append("No pude buscar los PR que piden tu revisión (%s)." % e.code); revisar = []
+    pide = {i["html_url"]: i for i in revisar}
+    for i in todos:
+        h = hilos.get(i["html_url"])
+        if _espera(etiquetas_de(i)) or (h and h["turno"] == HUMANO): pide.setdefault(i["html_url"], i)
+    for u, i in pide.items():
+        if _limpia(u) in citadas or any(l in NO_ACTIVO for l in etiquetas_de(i)): continue
+        verbo = "Revisar y dar el sí" if "pull_request" in i else "Contestar"
+        q = pide_reg.get(_limpia(u)) if _espera(etiquetas_de(i)) else None
+        if q: verbo = _corta(q[:1].upper() + q[1:], 140)   # lo que hay que hacer se lee entero; se recorta el título
+        pide_h.append((i["updated_at"], "- **%s:** %s · %s" % (verbo, _titulo(c, i, 40 if q else 60), _ref(c, i))))
+    pide_h.sort(key=lambda x: x[0])
+    en_pide_h = set(pide) | citadas
+
+    # 2) Parado: abierto, activo y sin moverse en DIAS_PARADO días
+    parado = []
+    for i in todos:
+        labs = etiquetas_de(i)
+        if any(l in NO_ACTIVO for l in labs) or _limpia(i["html_url"]) in en_pide_h: continue
+        if time.time() - _seg(i["updated_at"]) <= DIAS_PARADO * 86400: continue
+        quien = _mueve(c, i, hilos.get(i["html_url"]))
+        parado.append((i["updated_at"], "- %s %s · %s%s" % (_ref(c, i), _titulo(c, i, 55), hace(i["updated_at"]),
+                                                       " · turno: %s" % quien if quien else "")))
+    parado.sort(key=lambda x: x[0])
+
+    # 3) Proyectos vivos: un repo es un proyecto; en el canal, proyecto:* separa (sin etiqueta, «canal»)
+    grupos = []
+    for r in repos:
+        nombre = r.split("/")[1]
+        if r == c["repo"]:
+            sub = {}
+            for i in items[r]:
+                p = next((l[len("proyecto:"):] for l in etiquetas_de(i) if l.startswith("proyecto:")), None)
+                sub.setdefault(p, []).append(i)
+            for p in sorted(sub, key=lambda x: (x is not None, x or "")):
+                grupos.append(("%s (canal)" % nombre if p is None else p, r, sub[p], p is None))
+            if not sub: grupos.append(("%s (canal)" % nombre, r, [], True))
+        else:
+            grupos.append((nombre, r, items[r], True))
+    vivos = []
+    for nombre, r, its, con_repo in grupos:
+        act = [i for i in its if not any(l in NO_ACTIVO for l in etiquetas_de(i))]
+        prs = [i for i in act if "pull_request" in i]
+        if its and not act:     # nada activo: se cuenta lo aparcado, no se da el proyecto por aparcado
+            cuenta = {}
+            for i in its:
+                l = next((l for l in NO_ACTIVO if l in etiquetas_de(i)), "pausa")
+                cuenta[l] = cuenta.get(l, 0) + 1
+            fase = "nada activo abierto (%s)" % ", ".join(
+                "%d %s%s" % (n, l, "s" if n > 1 and l != "pausa" else "") for l, n in cuenta.items())
+        elif any(_espera(etiquetas_de(i)) or (hilos.get(i["html_url"]) or {}).get("turno") == HUMANO for i in act):
+            fase = "espera a " + HUMANO
+        elif prs: fase = "en revisión (%d PR)" % len(prs)
+        elif act: fase = "en marcha (%d abierto%s)" % (len(act), "s" if len(act) > 1 else "")
+        else: fase = "sin nada abierto"
+        fechas = [i["updated_at"] for i in its] + ([info[r]["pushed_at"]] if con_repo and info.get(r, {}).get("pushed_at") else [])
+        ult = max(act, key=lambda i: i["updated_at"]) if act else None
+        quien = _mueve(c, ult, hilos.get(ult["html_url"])) if ult else None
+        url = "https://github.com/%s" % r if con_repo else "https://github.com/%s/issues?q=is%%3Aopen+label%%3A%s" % (
+            r, urllib.parse.quote("proyecto:" + nombre))
+        vivos.append("- **[%s](%s)** · %s%s%s" % (nombre, url, fase, " · mueve %s" % quien if quien else "",
+                                                  " · " + hace(max(fechas)) if fechas else ""))
+
+    try:
+        from zoneinfo import ZoneInfo; import datetime
+        zona = c.get("zona") or (c.get("ciclo") or {}).get("zona") or "UTC"
+        ahora = datetime.datetime.now(ZoneInfo(zona)).strftime("%d/%m %H:%M") + ("" if zona != "UTC" else " UTC")
+    except Exception:
+        ahora = time.strftime("%d/%m %H:%M UTC", time.gmtime())
+    out = ["Se reescribe solo con `equipo.py tablero` · actualizado %s. No lo edites a mano: se pierde en la siguiente pasada." % ahora, ""]
+    out += ["### Te toca a %s (%d)" % (HUMANO, len(pide_h))] + ([l for _, l in pide_h[:MAX_HUMANO]] or ["- Nada."])
+    if len(pide_h) > MAX_HUMANO:
+        q = urllib.parse.quote("is:open user:%s label:%s" % (dueno, ESPERA_H))
+        out.append("- …y %d más: [registro](https://github.com/%s/blob/main/%s#esperan-a-%s) y [%s](https://github.com/issues?q=%s)." % (
+            len(pide_h) - MAX_HUMANO, c["repo"], REGISTRO, H, ESPERA_H, q))
+    out += ["", "### Parado: más de %d días sin moverse (%d)" % (DIAS_PARADO, len(parado))]
+    out += [l for _, l in parado[:MAX_PARADO]] or ["- Nada."]
+    if len(parado) > MAX_PARADO: out.append("- …y %d más." % (len(parado) - MAX_PARADO))
+    out += ["", "### Proyectos vivos"] + vivos
+    out += ["", "---", "Fuera del tablón: lo que GitHub no ve, como las aprobaciones pendientes fuera de GitHub y las rutinas de cada agente."]
+    out += ["Aviso: " + a for a in avisos]
+    return "\n".join(out) + "\n", num
+
 def main():
     if not ARGS: print(__doc__); return
     cmd = ARGS[0]
@@ -320,7 +516,7 @@ def main():
             print("AVISO: no puedo leer %s (%s). Hoy solo lees: no pidas decisiones ni fusiones." % (REGISTRO, e))
         ciclo = anterior_del_ciclo(c, yo)
         for i in todo(c, "/issues?state=open"):
-            if "pull_request" in i or "pausa" in etiquetas_de(i): continue
+            if "pull_request" in i or "pausa" in etiquetas_de(i) or es_tablero(c, i): continue
             h = analiza(c, i)
             for l in lineas_turno(h, yo, ciclo):
                 nada = False; print(l)
@@ -437,6 +633,15 @@ def main():
         for l in labs:          # una flag vieja que se queda puesta es justo el fallo que evitamos
             if l in sobra: api(c, "DELETE", url + "/labels/" + urllib.parse.quote(l)); print("quitada", l)
         print("PUESTA", f, ref)
+    elif cmd == "tablero":
+        cuerpo, num = cuerpo_tablero(c)
+        if PRUEBA:
+            print("[PRUEBA] issue %s, no se escribe nada:\n" % ("#%d" % num if num else "nuevo «%s»" % c.get("tablero_titulo", TABLERO))); print(cuerpo); return
+        if num:
+            api(c, "PATCH", "/issues/%d" % num, {"body": cuerpo}); print("TABLÓN AL DÍA #%d" % num)
+        else:
+            d, _ = api(c, "POST", "/issues", {"title": c.get("tablero_titulo", TABLERO), "body": cuerpo})
+            print("TABLÓN CREADO #%s: fíjalo (Pin issue) para que salga arriba" % d.get("number"))
     else:
         print(__doc__)
 
