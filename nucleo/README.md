@@ -6,7 +6,7 @@ El protocolo genérico del equipo: turnos, responsable de cada hilo, registro de
 - [glosario.md](glosario.md): las palabras del protocolo.
 - [plantilla-decisiones.md](plantilla-decisiones.md): el registro vacío, para copiar en el repo del canal.
 
-Estas reglas de lo público ya están en vigor, porque la Action [`lo-publico.yml`](../.github/workflows/lo-publico.yml) las aplica desde ahora.
+Estas reglas de lo público ya están en vigor, porque las aplican las Actions [`lo-publico.yml`](../.github/workflows/lo-publico.yml) y [`autoria.yml`](../.github/workflows/autoria.yml); la del autor, solo cuando el repo tiene la variable `AUTOR_COMMITS`.
 
 ## Reglas de lo público
 
