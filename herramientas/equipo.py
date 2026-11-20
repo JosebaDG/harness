@@ -5,9 +5,10 @@ Versión del kit «equipo en una caja», generalizada desde la herramienta de un
 
   equipo.py config <Agente> <owner/repo> <Persona> <Agente1,Agente2,...> [ruta_token]   una vez por máquina
   equipo.py bandeja                  qué hilos te tocan ahora y a quién hay que avisar
-                                     (TE TOCA, SIGUES TÚ, ESPERA ÚNICA, REPASA, PARADO, AVISAR A)
+                                     (TE TOCA, SIGUES TÚ, ESPERA ÚNICA, REPASA, PARADO, LLEGA LA FECHA, AVISAR A)
   equipo.py leer <n> [k]             título, etiquetas y los k últimos mensajes (def. 6)
   equipo.py escribir <n> <archivo> <turno>      turno: Agente | humano | nadie
+                                     (también el responsable de un hilo sin turno)
   equipo.py nuevo <titulo> <archivo> <turno> [tipo]   tipo: proyecto|aprendizaje|pregunta|decision
   equipo.py cerrar <n> <archivo>     solo el responsable: acta final, cierre y copia en aprendizajes/
   equipo.py avisado <n>              marca que ya avisaste a la persona de ese hilo
@@ -28,7 +29,9 @@ EXTERNO: leer lo enseña aparte, no da turno y bandeja avisa si se dirige a agen
 config es el usuario de GitHub de la persona (por defecto, el dueño del repo del canal).
 Con "ciclo" en la config ({"Ana": 10, "Bruno": 40, "horas": [8, 14], "zona": "UTC"}: minuto de
 cada agente, horas del ciclo y zona), bandeja saca ESPERA ÚNICA cuando un hilo tiene el turno del anterior
-del ciclo y este no ha escrito desde su hora de este ciclo. Sin "ciclo", no sale nunca."""
+del ciclo y este no ha escrito desde su hora de este ciclo. Sin "ciclo", no sale nunca.
+Un hilo sin turno que espera una fecha lleva la etiqueta hasta:AAAA-MM-DD (fecha UTC): bandeja y tablero no lo
+dan por parado hasta ese día, y ese día bandeja le saca al responsable LLEGA LA FECHA. Dar turno quita la etiqueta."""
 import calendar, json, os, re, sys, time, urllib.request, urllib.parse
 
 # Velocidad: sin límite de mensajes seguidos entre agentes y sin tope de hilos.
@@ -220,8 +223,36 @@ def lineas_turno(h, yo, ciclo=None):
 def estado():
     return json.load(open(EST)) if os.path.exists(EST) else {}
 
+def fecha_hasta(labs):
+    """La fecha de la etiqueta hasta:AAAA-MM-DD (un hilo sin turno que espera ese día), o None."""
+    for l in labs:
+        m = re.match(r"^hasta:(\d{4}-\d{2}-\d{2})$", l)
+        if m: return m.group(1)
+    return None
+
+def hoy(ahora=None): return time.strftime("%Y-%m-%d", time.gmtime(time.time() if ahora is None else ahora))
+
+def espera_fecha(labs, ahora=None):
+    """True mientras no llega la fecha de hasta:: el hilo no está parado, está esperando."""
+    f = fecha_hasta(labs)
+    return bool(f) and hoy(ahora) < f
+
+def lineas_fecha(h, yo, ahora=None):
+    """LLEGA LA FECHA: soy el responsable de un hilo sin turno y ya es (o pasó) el día de su hasta:."""
+    f = fecha_hasta(h["labs"])
+    if h["resp"] != yo or h["turno"] or not f or hoy(ahora) < f: return []
+    return ["LLEGA LA FECHA #%d %s | hasta:%s: dale turno (escribir, que quita la etiqueta) o ciérralo con acta" % (
+        h["n"], h["titulo"], f)]
+
+def puede_escribir(h, yo):
+    """None si puedo escribir; si no, el motivo. Escribe quien tiene el turno y, en un hilo sin turno, su responsable
+    (si no, la bandeja le pediría «ciérralo o dale turno» y la herramienta no le dejaría hacerlo)."""
+    if "pausa" in h["labs"] or h["turno"] == "Alto": return "PARADO: el hilo está en pausa"
+    if h["turno"] == yo or (not h["turno"] and h["resp"] == yo): return None
+    return "NO TE TOCA: el turno es de %s" % (h["turno"] or "nadie y el responsable es %s" % h["resp"])
+
 def pon_turno(c, h, nuevo):
-    quitar = [l for l in h["labs"] if l.startswith("turno:") or l == ESPERA_H]
+    quitar = [l for l in h["labs"] if l.startswith("turno:") or l == ESPERA_H or (nuevo != "nadie" and fecha_hasta([l]))]
     for l in quitar: api(c, "DELETE", "/issues/%d/labels/%s" % (h["n"], urllib.parse.quote(l)))
     poner = [] if nuevo == "nadie" else ["turno:" + nuevo.lower()] + ([ESPERA_H] if nuevo.lower() == H else [])
     if poner: api(c, "POST", "/issues/%d/labels" % h["n"], {"labels": poner})
@@ -428,7 +459,7 @@ def cuerpo_tablero(c):
     parado = []
     for i in todos:
         labs = etiquetas_de(i)
-        if any(l in NO_ACTIVO for l in labs) or _limpia(i["html_url"]) in en_pide_h: continue
+        if any(l in NO_ACTIVO for l in labs) or _limpia(i["html_url"]) in en_pide_h or espera_fecha(labs): continue
         if time.time() - _seg(i["updated_at"]) <= DIAS_PARADO * 86400: continue
         quien = _mueve(c, i, hilos.get(i["html_url"]))
         parado.append((i["updated_at"], "- %s %s · %s%s" % (_ref(c, i), _titulo(c, i, 55), hace(i["updated_at"]),
@@ -529,7 +560,9 @@ def main():
                 print(("REPASA #%d %s: %d mensajes de agentes seguidos. Si avanza, sigue; si da vueltas, pon pausa y díselo a " + HUMANO + " en una línea") % (
                     h["n"], h["titulo"], h["seguidos"]))
             quieto = time.time() - calendar.timegm(time.strptime(i["updated_at"], "%Y-%m-%dT%H:%M:%SZ"))
-            if h["resp"] == yo and not h["turno"] and quieto > DIAS_PARADO * 86400:
+            for l in lineas_fecha(h, yo):
+                nada = False; print(l)
+            if h["resp"] == yo and not h["turno"] and not fecha_hasta(h["labs"]) and quieto > DIAS_PARADO * 86400:
                 nada = False; print("PARADO #%d %s: sin turno ni mensajes en %d días. Ciérralo con acta o dale turno" % (h["n"], h["titulo"], DIAS_PARADO))
             if h["resp"] == yo and h["turno"] == HUMANO and h["ultimo"] != HUMANO and st.get(str(h["n"])) != h["ult_id"]:
                 nada = False; print("AVISAR A %s #%d %s (espera su respuesta)" % (HUMANO.upper(), h["n"], h["titulo"]))
@@ -547,8 +580,8 @@ def main():
         n, texto, turno = int(ARGS[1]), lee_msg(ARGS[2]), ARGS[3]
         if turno.lower() == "humano": turno = H
         h = analiza(c, api(c, "GET", "/issues/%d" % n)[0])
-        if "pausa" in h["labs"] or h["turno"] == "Alto": sys.exit("PARADO: el hilo está en pausa")
-        if h["turno"] != yo: sys.exit("NO TE TOCA: el turno es de %s" % h["turno"])
+        motivo = puede_escribir(h, yo)
+        if motivo: sys.exit(motivo)
         if turno.lower() not in [a.lower() for a in AGENTES] + [H, "nadie"]: sys.exit("turno no válido")
         api(c, "POST", "/issues/%d/comments" % n, {"body": firma(yo, texto, turno)})
         if not valor(h["labs"], "resp:"):        # hilo abierto por la persona: el primero que responde es el responsable

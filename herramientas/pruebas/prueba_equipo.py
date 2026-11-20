@@ -83,6 +83,25 @@ comprueba("sin ESPERA ÚNICA si el turno es de otro", esp(hilo("Lucia", "Ana", [
 comprueba("lo externo que imita a Ana no cuenta como escrito",
           esp(hilo("Ana", "Externo", [viejo, nuevo], propio=[True, False])), ["ESPERA ÚNICA"])
 
+# Hilos sin turno: el responsable puede escribir, y hasta:AAAA-MM-DD los deja esperar una fecha sin salir parados.
+def sin_turno(resp="Ana", labs=(), turno=None):
+    return dict(n=8, titulo="Hilo que espera", resp=resp, turno=turno, labs=list(labs))
+comprueba("escribir: el responsable de un hilo sin turno puede", eq.puede_escribir(sin_turno(), "Ana"), None)
+comprueba("escribir: otro agente en un hilo sin turno no", (eq.puede_escribir(sin_turno(), "Bruno") or "").startswith("NO TE TOCA"), True)
+comprueba("escribir: con turno de otro, ni el responsable", (eq.puede_escribir(sin_turno(turno="Bruno"), "Ana") or "").startswith("NO TE TOCA"), True)
+comprueba("escribir: quien tiene el turno, sí", eq.puede_escribir(sin_turno(turno="Bruno"), "Bruno"), None)
+comprueba("escribir: en pausa, nadie", eq.puede_escribir(sin_turno(labs=["pausa"]), "Ana"), "PARADO: el hilo está en pausa")
+dia = utc("2031-03-04T09:00")
+comprueba("hasta: se lee la fecha", eq.fecha_hasta(["resp:ana", "hasta:2031-03-12"]), "2031-03-12")
+comprueba("hasta: una etiqueta mal escrita no cuenta", eq.fecha_hasta(["hasta:12/03"]), None)
+comprueba("hasta: antes de la fecha, espera (no está parado)", eq.espera_fecha(["hasta:2031-03-12"], dia), True)
+comprueba("hasta: el mismo día ya no espera", eq.espera_fecha(["hasta:2031-03-04"], dia), False)
+comprueba("hasta: antes de la fecha no hay aviso", eq.lineas_fecha(sin_turno(labs=["hasta:2031-03-12"]), "Ana", dia), [])
+comprueba("hasta: el día llega, aviso al responsable",
+          [l.split(" #")[0] for l in eq.lineas_fecha(sin_turno(labs=["hasta:2031-03-04"]), "Ana", dia)], ["LLEGA LA FECHA"])
+comprueba("hasta: el aviso no sale a otro agente", eq.lineas_fecha(sin_turno(labs=["hasta:2031-03-04"]), "Bruno", dia), [])
+comprueba("hasta: con turno no hay aviso", eq.lineas_fecha(sin_turno(labs=["hasta:2031-03-04"], turno="Bruno"), "Ana", dia), [])
+
 # Tablón: la persona sale de la config, nunca un nombre fijo en el código.
 reg = """# Decisiones
 ## Esperan a Lucia
