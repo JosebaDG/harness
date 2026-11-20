@@ -1,0 +1,89 @@
+# Revisa que cada commit de un PR lleve el autor acordado para el repo.
+#
+# El autor acordado sale de la variable del repo AUTOR_COMMITS (Settings >
+# Secrets and variables > Actions > Variables), nunca de este archivo: así la
+# plantilla sirve a cualquier equipo. Vale un correo o varios, separados por
+# comas o espacios. Se compara solo el correo del autor, sin mayúsculas: el
+# nombre puede variar y el que hace el commit (committer) lo pone GitHub al
+# fusionar o al actualizar la rama desde la web.
+#
+# - Sin la variable, no comprueba nada y lo avisa sin fallar.
+# - Solo mira los PR que salen de una rama de este mismo repo: una aportación
+#   desde un fork lleva el autor de quien la hace, y eso está bien.
+# - En las ramas prueba/** hace lo mismo contra main, para probarla sin PR.
+# - En main no mira: el autor del squash lo pone GitHub al fusionar.
+
+name: Autoría
+
+on:
+  pull_request:
+  push:
+    branches: ['prueba/**']
+
+permissions:
+  contents: read
+
+jobs:
+  autor:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Comprobar el autor de cada commit
+        shell: bash
+        env:
+          AUTOR_COMMITS: ${{ vars.AUTOR_COMMITS }}
+          EVENTO: ${{ github.event_name }}
+          RAMA_BASE: ${{ github.base_ref }}
+          CABEZA_PR: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -u
+          echo "### Autoría" >> "$GITHUB_STEP_SUMMARY"
+
+          acordados=$(printf '%s' "${AUTOR_COMMITS:-}" | tr ',' ' ' | tr '[:upper:]' '[:lower:]')
+          if [ -z "${acordados// /}" ]; then
+            echo "::warning::Falta la variable del repo AUTOR_COMMITS: no compruebo el autor de los commits."
+            echo "Sin comprobar: falta la variable del repo AUTOR_COMMITS." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          if [ "$EVENTO" = pull_request ]; then
+            rango="origin/$RAMA_BASE..$CABEZA_PR"
+          else
+            rango="origin/main..$GITHUB_SHA"
+          fi
+
+          if ! lista=$(git log --reverse --format='%H %ae' "$rango"); then
+            echo "::error::No pude listar los commits de $rango"
+            exit 1
+          fi
+
+          revisados=0
+          fallos=0
+          while read -r sha correo; do
+            [ -n "${sha:-}" ] || continue
+            revisados=$((revisados + 1))
+            correo_min=$(printf '%s' "$correo" | tr '[:upper:]' '[:lower:]')
+            bien=0
+            for a in $acordados; do
+              [ "$correo_min" = "$a" ] && bien=1
+            done
+            if [ "$bien" -eq 0 ]; then
+              fallos=$((fallos + 1))
+              # El correo del autor ya es público en el commit; aun así solo se
+              # dice qué commit es y quién lo firmó por nombre.
+              nombre=$(git log -1 --format='%an' "$sha")
+              echo "::error::El commit ${sha:0:7} no lleva el autor acordado (firmado como «$nombre»)."
+              echo "- ${sha:0:7} · firmado como «$nombre»: no es el autor acordado" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done <<< "$lista"
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Commits revisados: $revisados · Con otro autor: $fallos" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$fallos" -gt 0 ]; then
+            echo "::error::Hay $fallos commits con otro autor. Rehazlos con el autor acordado (git commit --amend --reset-author, o git rebase -i con --exec) antes de fusionar."
+            exit 1
+          fi
