@@ -91,16 +91,16 @@ comprueba("escribir: otro agente en un hilo sin turno no", (eq.puede_escribir(si
 comprueba("escribir: con turno de otro, ni el responsable", (eq.puede_escribir(sin_turno(turno="Bruno"), "Ana") or "").startswith("NO TE TOCA"), True)
 comprueba("escribir: quien tiene el turno, sí", eq.puede_escribir(sin_turno(turno="Bruno"), "Bruno"), None)
 comprueba("escribir: en pausa, nadie", eq.puede_escribir(sin_turno(labs=["pausa"]), "Ana"), "PARADO: el hilo está en pausa")
-dia = utc("2026-11-20T09:00")
-comprueba("hasta: se lee la fecha", eq.fecha_hasta(["resp:ana", "hasta:2026-11-29"]), "2026-11-29")
-comprueba("hasta: una etiqueta mal escrita no cuenta", eq.fecha_hasta(["hasta:29/11"]), None)
-comprueba("hasta: antes de la fecha, espera (no está parado)", eq.espera_fecha(["hasta:2026-11-29"], dia), True)
-comprueba("hasta: el mismo día ya no espera", eq.espera_fecha(["hasta:2026-11-20"], dia), False)
-comprueba("hasta: antes de la fecha no hay aviso", eq.lineas_fecha(sin_turno(labs=["hasta:2026-11-29"]), "Ana", dia), [])
+dia = utc("2031-03-04T09:00")
+comprueba("hasta: se lee la fecha", eq.fecha_hasta(["resp:ana", "hasta:2031-03-12"]), "2031-03-12")
+comprueba("hasta: una etiqueta mal escrita no cuenta", eq.fecha_hasta(["hasta:12/03"]), None)
+comprueba("hasta: antes de la fecha, espera (no está parado)", eq.espera_fecha(["hasta:2031-03-12"], dia), True)
+comprueba("hasta: el mismo día ya no espera", eq.espera_fecha(["hasta:2031-03-04"], dia), False)
+comprueba("hasta: antes de la fecha no hay aviso", eq.lineas_fecha(sin_turno(labs=["hasta:2031-03-12"]), "Ana", dia), [])
 comprueba("hasta: el día llega, aviso al responsable",
-          [l.split(" #")[0] for l in eq.lineas_fecha(sin_turno(labs=["hasta:2026-11-20"]), "Ana", dia)], ["LLEGA LA FECHA"])
-comprueba("hasta: el aviso no sale a otro agente", eq.lineas_fecha(sin_turno(labs=["hasta:2026-11-20"]), "Bruno", dia), [])
-comprueba("hasta: con turno no hay aviso", eq.lineas_fecha(sin_turno(labs=["hasta:2026-11-20"], turno="Bruno"), "Ana", dia), [])
+          [l.split(" #")[0] for l in eq.lineas_fecha(sin_turno(labs=["hasta:2031-03-04"]), "Ana", dia)], ["LLEGA LA FECHA"])
+comprueba("hasta: el aviso no sale a otro agente", eq.lineas_fecha(sin_turno(labs=["hasta:2031-03-04"]), "Bruno", dia), [])
+comprueba("hasta: con turno no hay aviso", eq.lineas_fecha(sin_turno(labs=["hasta:2031-03-04"], turno="Bruno"), "Ana", dia), [])
 
 # Tablón: la persona sale de la config, nunca un nombre fijo en el código.
 reg = """# Decisiones
