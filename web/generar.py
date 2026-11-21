@@ -21,6 +21,93 @@ CFG = json.loads((WEB / "sitio.json").read_text(encoding="utf-8"))
 REPO = CFG["repo"]
 BLOB = "https://github.com/%s/blob/main/" % REPO
 TREE = "https://github.com/%s/tree/main/" % REPO
+VARIANTE = CFG.get("variante", "harness")
+CASA = CFG.get("casa", {"nombre": "The Singularity", "url": "https://josebadg.github.io/"})
+
+
+# ---------- Lo visual: colores, iconos e ilustraciones (sin texto de los .md) ----------
+
+# Los colores salen de la web principal (portada/punto.css): oro, azul, turquesa, rosa y ámbar.
+COLORES = ["#a2bcff", "#47d6cf", "#f89dc9", "#e6b55d", "#f3cf96"]
+
+ICONOS = {
+    "nucleo": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" class="lleno"/>',
+    "herramientas": '<rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 10l3 2.5L7 15M12.5 15.5H17"/>',
+    "especialistas": '<path d="M4 15.5c0-4.5 3.6-8 8-8s8 3.5 8 8"/><path d="M2.5 15.5h19"/><path d="M12 7.5V4.5"/><circle cx="12" cy="3.6" r="1.1" class="lleno"/>',
+    "flujos": '<circle cx="5" cy="6" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><path d="M7 6c6 0 6 6 10 6M7 18c6 0 6-6 10-6"/>',
+    "ejemplos": '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.4" class="lleno"/>',
+    "conceptos": '<circle cx="6" cy="7" r="2.2"/><circle cx="18" cy="7" r="2.2"/><circle cx="12" cy="17.5" r="2.2"/><path d="M8 8.2l2.8 7.2M16 8.2l-2.8 7.2M8.2 7h7.6"/>',
+    "fuentes": '<path d="M6 3.5h9l3.5 3.5v13.5H6z"/><path d="M15 3.5V7h3.5M9 11h6.5M9 14h6.5M9 17h4"/>',
+}
+ICONO_OTRO = '<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="12" r="1.6" class="lleno"/>'
+
+
+def icono(clave, clase="icono"):
+    return ('<svg class="%s" viewBox="0 0 24 24" aria-hidden="true" focusable="false">%s</svg>'
+            % (clase, ICONOS.get(clave, ICONO_OTRO)))
+
+
+def color_seccion(dir_):
+    for i, s in enumerate(CFG["secciones"]):
+        if s["dir"] == dir_:
+            return s.get("color") or COLORES[i % len(COLORES)]
+    return COLORES[-1]
+
+
+def isotipo():
+    """El punto de la familia: el de la web principal, con el color de este sitio alrededor."""
+    if VARIANTE == "wiki":
+        dentro = ('<rect x="9" y="16" width="5" height="18" rx="1.5" fill="#a2bcff"/>'
+                  '<rect x="16" y="11" width="5" height="23" rx="1.5" fill="#47d6cf"/>'
+                  '<rect x="23" y="14" width="5" height="20" rx="1.5" fill="#f89dc9" transform="rotate(-12 25.5 34)"/>'
+                  '<circle cx="31" cy="9" r="3.2" fill="#fff" class="iso-punto"/>')
+    else:
+        dentro = ('<circle cx="20" cy="20" r="13" fill="none" stroke="#f3cf96" stroke-width="1.6" stroke-dasharray="2 3.4"/>'
+                  '<circle cx="20" cy="7" r="3" fill="#a2bcff"/><circle cx="33" cy="20" r="3" fill="#47d6cf"/>'
+                  '<circle cx="20" cy="33" r="3" fill="#f89dc9"/><circle cx="7" cy="20" r="3" fill="#e6b55d"/>'
+                  '<circle cx="20" cy="20" r="3.6" fill="#fff" class="iso-punto"/>')
+    return '<svg class="iso" viewBox="0 0 40 40" aria-hidden="true" focusable="false">%s</svg>' % dentro
+
+
+def ilustracion():
+    """La escena de la portada. Harness: el operador en el centro y el equipo en órbita, sobre el pozo de la malla.
+    Wiki: una estantería que se llena, con el punto encima."""
+    if VARIANTE == "wiki":
+        lomos, x = [], 34
+        alturas = [150, 196, 172, 120, 210, 160, 188, 136, 178, 204, 146]
+        for i, h in enumerate(alturas):
+            w = 20 if i % 3 else 26
+            c = COLORES[i % len(COLORES)]
+            lomos.append('<rect class="lomo" style="--i:%d" x="%d" y="%d" width="%d" height="%d" rx="3" fill="%s" fill-opacity="%.2f"/>'
+                         % (i, x, 262 - h, w, h, c, 0.9 if i % 2 else 0.55))
+            lomos.append('<line class="lomo" style="--i:%d" x1="%d" x2="%d" y1="%d" y2="%d" stroke="#000" stroke-opacity=".45" stroke-width="2"/>'
+                         % (i, x + 4, x + w - 4, 262 - h + 18, 262 - h + 18))
+            x += w + 6
+        estante = '<path d="M20 264h300" stroke="#f3cf96" stroke-width="2"/><path d="M20 290h300" stroke="#333" stroke-width="1"/>'
+        malla = "".join('<path d="M20 %d h300" stroke="#f3cf96" stroke-opacity="%.2f" stroke-width="1"/>' % (300 + k * 10, 0.18 - k * 0.04) for k in range(4))
+        punto = ('<circle class="iso-onda" cx="290" cy="62" r="9" fill="none" stroke="#fff" stroke-width="1.5"/>'
+                 '<circle class="iso-punto" cx="290" cy="62" r="9" fill="#fff"/>')
+        dentro = estante + malla + "".join(lomos) + punto
+    else:
+        malla = []
+        for k in range(6):
+            rx, ry = 40 + k * 26, 14 + k * 9
+            malla.append('<ellipse class="malla" style="--i:%d" cx="170" cy="182" rx="%d" ry="%d" fill="none" stroke="#f3cf96" stroke-opacity="%.2f"/>'
+                         % (k, rx, ry, 0.55 - k * 0.08))
+        orbita = '<circle class="orbita" cx="170" cy="150" r="104" fill="none" stroke="#f3cf96" stroke-opacity=".5" stroke-width="1.4" stroke-dasharray="3 7"/>'
+        import math
+        nodos, lazos = [], []
+        for i, ang in enumerate([-90, 0, 90, 180]):
+            x = 170 + 104 * math.cos(math.radians(ang)); y = 150 + 104 * math.sin(math.radians(ang))
+            c = COLORES[i]
+            lazos.append('<line class="lazo" style="--i:%d" x1="170" y1="150" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="1.6" stroke-opacity=".8"/>' % (i, x, y, c))
+            nodos.append('<circle class="nodo" style="--i:%d" cx="%.1f" cy="%.1f" r="11" fill="%s"/>' % (i, x, y, c))
+        # el relevo: un arco que une a cada agente con el siguiente
+        relevo = '<path class="relevo" d="M170 46 A104 104 0 0 1 274 150 A104 104 0 0 1 170 254 A104 104 0 0 1 66 150" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="2" stroke-linecap="round"/>'
+        punto = ('<circle class="iso-onda" cx="170" cy="150" r="14" fill="none" stroke="#fff" stroke-width="1.5"/>'
+                 '<circle class="iso-punto" cx="170" cy="150" r="14" fill="#fff"/>')
+        dentro = "".join(malla) + orbita + "".join(lazos) + relevo + "".join(nodos) + punto
+    return ('<figure class="escena-portada" aria-hidden="true"><svg viewBox="0 0 340 340" focusable="false">%s</svg></figure>' % dentro)
 
 
 # ---------- Markdown mínimo: lo que usan los documentos del repo ----------
@@ -233,6 +320,8 @@ def plantilla(ruta, titulo, cuerpo, descripcion, migas=(), seccion=None, toc=(),
     if len(toc) >= 3:
         indice = ('<details class="indice"><summary>En esta página · %d apartados</summary><ol>%s</ol></details>'
                   % (len(toc), "".join('<li><a href="#%s">%s</a></li>' % (i, html.escape(t)) for i, t in toc)))
+    nav = [n.replace("<li><a ", '<li style="--acento:%s"><a ' % color_seccion(s["dir"]), 1)
+           for n, s in zip(nav, CFG["secciones"])] + nav[len(CFG["secciones"]):]
     titulo_doc = html.escape(titulo if ruta == "index.html" else "%s · %s" % (titulo, CFG["titulo"]))
     return """<!doctype html>
 <html lang="es">
@@ -241,14 +330,18 @@ def plantilla(ruta, titulo, cuerpo, descripcion, migas=(), seccion=None, toc=(),
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>%(titulo_doc)s</title>
 <meta name="description" content="%(desc)s">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="%(favicon)s" type="image/svg+xml">
+<link rel="preload" href="%(fuente)s" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="%(css)s">
 </head>
-<body>
+<body class="sitio-%(variante)s%(clase_pag)s"%(estilo_pag)s>
 <a class="saltar" href="#contenido">Ir al contenido</a>
+<div class="reloj" aria-hidden="true"></div>
 <header class="cabecera">
   <div class="marco cabecera-fila">
-    <a class="marca" href="%(inicio)s"><span class="punto" aria-hidden="true"></span>%(marca)s</a>
+    <a class="marca" href="%(inicio)s">%(iso)s<span>%(marca)s</span></a>
     <nav aria-label="Secciones"><ul class="menu">%(nav)s</ul></nav>
   </div>
 </header>
@@ -260,6 +353,7 @@ def plantilla(ruta, titulo, cuerpo, descripcion, migas=(), seccion=None, toc=(),
 <footer class="pie">
   <div class="marco pie-fila">
     %(pie_extra)s
+    <p class="pie-casa"><a href="%(casa_url)s">%(iso)s<span>Parte de %(casa)s</span></a></p>
     <p>%(licencia)s · <a href="https://github.com/%(repo)s">Código y documentos en GitHub</a></p>
   </div>
 </footer>
@@ -267,7 +361,11 @@ def plantilla(ruta, titulo, cuerpo, descripcion, migas=(), seccion=None, toc=(),
 </html>
 """ % dict(titulo_doc=titulo_doc, desc=html.escape(descripcion[:300]), css=r("estilo.css"), inicio=r("index.html"),
            marca=html.escape(CFG["titulo"]), nav="".join(nav), migas=miga, indice=indice, cuerpo=cuerpo,
-           pie_extra=pie_extra, licencia=html.escape(CFG["licencia"]), repo=REPO)
+           pie_extra=pie_extra, licencia=html.escape(CFG["licencia"]), repo=REPO,
+           favicon=r("marca/favicon.svg"), fuente=r("fuentes/archivo.woff2"), variante=VARIANTE, iso=isotipo(),
+           clase_pag=" portada-pag" if ruta == "index.html" else "",
+           estilo_pag=(' style="--acento:%s"' % color_seccion(seccion)) if seccion else "",
+           casa=html.escape(CASA["nombre"]), casa_url=CASA["url"])
 
 
 def texto_plano(t):
@@ -312,7 +410,7 @@ def recoger():
 
 def tarjeta(ruta_actual, rel):
     p = PAGINAS[rel]
-    return ('<li class="tarjeta"><a href="%s"><strong>%s</strong><span>%s</span></a></li>'
+    return ('<li class="tarjeta revela"><a href="%s"><strong>%s</strong><span>%s</span></a></li>'
             % (relativo(ruta_actual, p["html"]), html.escape(p["nombre"]), html.escape(p["desc"][:180])))
 
 
@@ -327,33 +425,36 @@ def generar():
     partes = secciones_md(portada)
     intro_html, titulo, _, primero = md(partes[""], CFG["portada"])
     bloques = []
-    for s in CFG["secciones"]:
+    for num, s in enumerate(CFG["secciones"], 1):
         readme = RAIZ / s["origen"] / "README.md"
         desc = s.get("desc", "")
         if readme.exists():
             desc = texto_plano(md(readme.read_text(encoding="utf-8"), s["origen"] + "/README.md")[3])
         n = len(s["archivos"])
         cuenta = ('<span class="cuenta">%s</span>' % html.escape("%d %s" % (n, s.get("unidad", "documentos") if n != 1 else s.get("unidad1", "documento")))) if n else ""
-        bloques.append('<li class="tarjeta"><a href="%s/index.html"><strong>%s</strong>%s<span>%s</span></a></li>'
-                       % (s["dir"], html.escape(s["nombre"]), cuenta, html.escape(desc[:220])))
+        bloques.append('<li class="pieza revela" style="--acento:%s"><a href="%s/index.html">'
+                       '<span class="pieza-cab"><span class="num" aria-hidden="true">%02d</span>%s</span>'
+                       '<strong>%s</strong>%s<span class="pieza-desc">%s</span><span class="flecha" aria-hidden="true">→</span></a></li>'
+                       % (color_seccion(s["dir"]), s["dir"], num, icono(s["dir"]), html.escape(s["nombre"]), cuenta, html.escape(desc[:220])))
     extra_portada = []
     for t in CFG.get("portada_apartados", []):
         if t in partes:
             h, _, _, _ = md("## %s\n%s" % (t, partes[t]), CFG["portada"])
-            extra_portada.append('<section class="bloque">%s</section>' % h)
+            extra_portada.append('<section class="bloque revela">%s</section>' % h)
     clonar = ""
     if CFG.get("clonar"):
         clonar = ('<div class="clonar"><p class="etiqueta" id="clonar">Para empezar, clona el repo</p>'
-                  '<pre tabindex="0" aria-labelledby="clonar"><code>git clone https://github.com/%s</code></pre></div>' % REPO)
+                  '<pre tabindex="0" aria-labelledby="clonar"><code><span class="prompt" aria-hidden="true">$ </span>git clone https://github.com/%s</code></pre></div>' % REPO)
     acciones = '<p class="acciones">'
     for a in CFG.get("acciones", []):
         dest = a["href"] if a["href"].startswith(("http", "#")) else a["href"]
         acciones += '<a class="boton%s" href="%s">%s</a> ' % ("" if a.get("principal") else " secundario", dest, html.escape(a["texto"]))
     acciones += '<a class="boton secundario" href="https://github.com/%s">Ver en GitHub</a></p>' % REPO
-    cuerpo = ('<section class="portada"><h1>%s</h1>%s%s%s</section>'
-              '<section class="bloque" aria-labelledby="que-hay"><h2 id="que-hay">%s</h2><ul class="tarjetas">%s</ul></section>%s'
-              % (html.escape(titulo), intro_html, acciones, clonar, html.escape(CFG.get("titulo_secciones", "Qué hay dentro")),
-                 "".join(bloques), "".join(extra_portada)))
+    antetitulo = '<p class="antetitulo"><a href="%s">%s</a></p>' % (CASA["url"], html.escape(CASA["nombre"]))
+    cuerpo = ('<section class="portada"><div class="portada-texto">%s<h1>%s</h1>%s%s%s</div>%s</section>'
+              '<section class="bloque bloque-piezas" aria-labelledby="que-hay"><h2 id="que-hay">%s</h2><ol class="piezas">%s</ol></section>%s'
+              % (antetitulo, html.escape(titulo), intro_html, acciones, clonar, ilustracion(),
+                 html.escape(CFG.get("titulo_secciones", "Qué hay dentro")), "".join(bloques), "".join(extra_portada)))
     salida["index.html"] = plantilla("index.html", CFG["titulo"], cuerpo, texto_plano(primero))
 
     # Secciones
@@ -377,8 +478,10 @@ def generar():
             listas.append(cab + '<ul class="tarjetas">%s</ul>' % "".join(tarjeta(ruta, r) for r in rels))
         lista = ('<section class="bloque" aria-labelledby="docs"><h2 id="docs">%s · %d</h2>%s</section>'
                  % (html.escape(s.get("titulo_lista", "Documentos")), len(s["archivos"]), "".join(listas))) if s["archivos"] else ""
-        cuerpo = '<h1>%s</h1>%s%s<p class="acciones"><a class="boton secundario" href="%s">Ver la carpeta en GitHub</a></p>' % (
-            html.escape(s["nombre"]), intro, lista, TREE + s["origen"])
+        num = CFG["secciones"].index(s) + 1
+        cuerpo = ('<header class="seccion-cab"><span class="num" aria-hidden="true">%02d</span>%s<h1>%s</h1></header>'
+                  '<div class="seccion-intro">%s</div>%s<p class="acciones"><a class="boton secundario" href="%s">Ver la carpeta en GitHub</a></p>') % (
+            num, icono(s["dir"], "icono icono-grande"), html.escape(s["nombre"]), intro, lista, TREE + s["origen"])
         salida[ruta] = plantilla(ruta, s["nombre"], cuerpo, desc, migas=[(s["nombre"], None)], seccion=s["dir"],
                                  toc=(toc + ([("docs", s.get("titulo_lista", "Documentos"))] if s["archivos"] else [])) if len(toc) >= 2 else ())
 
@@ -393,8 +496,8 @@ def generar():
             nav += ('<a class="ant" href="%s"><span>Anterior</span>%s</a>' % (relativo(p["html"], ant["html"]), html.escape(ant["nombre"]))) if ant else "<span></span>"
             nav += ('<a class="sig" href="%s"><span>Siguiente</span>%s</a>' % (relativo(p["html"], sig["html"]), html.escape(sig["nombre"]))) if sig else "<span></span>"
             nav += "</nav>"
-            salida_doc = ('<article class="doc"><h1>%s</h1>%s</article>%s<p class="acciones"><a class="boton" href="%s">Volver a %s</a> %s</p>'
-                          % (html.escape(titulo or p["nombre"]), h, nav, relativo(p["html"], ruta), html.escape(s["nombre"]), gh(rel)))
+            salida_doc = ('<article class="doc"><p class="doc-seccion">%s<span>%s</span></p><h1>%s</h1>%s</article>%s<p class="acciones"><a class="boton" href="%s">Volver a %s</a> %s</p>'
+                          % (icono(s["dir"]), html.escape(s["nombre"]), html.escape(titulo or p["nombre"]), h, nav, relativo(p["html"], ruta), html.escape(s["nombre"]), gh(rel)))
             salida[p["html"]] = plantilla(p["html"], titulo or p["nombre"], salida_doc, p["desc"],
                                           migas=[(s["nombre"], ruta), (titulo or p["nombre"], None)], seccion=s["dir"], toc=toc)
 
@@ -410,6 +513,9 @@ def generar():
     salida["404.html"] = plantilla("404.html", "Página no encontrada",
                                    '<h1>Esta página no existe</h1><p>Puede que se haya movido.</p><p class="acciones"><a class="boton" href="/%s/">Volver al inicio</a></p>' % REPO.split("/")[1],
                                    "Página no encontrada")
+    # Icono de pestaña: el isotipo sobre negro, como el de la web principal
+    salida["marca/favicon.svg"] = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="#000"/>%s</svg>\n'
+                                   % isotipo().split(">", 1)[1].rsplit("</svg>", 1)[0])
     return salida
 
 
