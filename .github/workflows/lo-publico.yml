@@ -1,27 +1,30 @@
-# Revisa que nada de lo que entra en este repo público deba quedarse fuera.
+# Revisa que nada de lo que entra en un repo público deba quedarse fuera.
 #
-# Falla si encuentra tokens, client_id de GitHub Apps, rutas de máquina,
-# números de hilo internos o el nombre del repo privado del equipo.
-# Avisa sin fallar si encuentra nombres que conviene revisar a mano.
+# Puede ejecutarse directamente en este repo (pull_request / push) o llamarse
+# como workflow reutilizable (workflow_call) desde otros repositorios públicos.
+#
+# Reglas universales integradas (bloquean siempre):
+# - tokens de GitHub (clásicos y de grano fino), client_id de GitHub Apps;
+# - rutas de máquina (/home/..., /Users/...);
+# - números de hilo interno (hilo #N).
+#
+# Reglas privadas por repositorio (nunca escritas en este YAML):
+# Se configuran en Settings > Secrets and variables > Actions como secretos
+# opcionales (una regla por línea, con formato «Etiqueta::patron_ERE» o solo
+# «patron_ERE»):
+# - LO_PUBLICO_BLOQUEO: bloquea en contenido, diffs y mensajes de commit.
+# - LO_PUBLICO_AVISO: avisa sin bloquear (revisión manual).
+# - LO_PUBLICO_BLOQUEO_NOMBRES: bloquea en nombres de archivo del árbol y commits.
 #
 # Mira dos cosas:
 # - el árbol final, siempre;
-# - en un PR, además, las líneas añadidas de cada commit de la rama y sus
-#   mensajes. Un secreto que entra en un commit y se borra en el siguiente
-#   ya no está en el árbol, pero sigue a la vista en el PR: GitHub guarda
-#   refs/pull/N/head aunque se borre la rama, y el squash solo limpia main.
-#   Si salta aquí, borrarlo no basta: se avisa y se rota (nucleo/README.md).
-# En las ramas prueba/** hace lo mismo contra main, para probar esta Action
-# sin abrir un PR. En main mira el árbol y los commits que acaba de traer el
-# push (de github.event.before a GITHUB_SHA), mensajes incluidos: el mensaje
-# del squash se escribe al fusionar y nadie lo revisa en el PR. Ahí ya está
-# publicado, así que no lo evita: lo descubre en el momento. Lo que lo evita
-# es la regla de nucleo/README.md.
+# - en un PR, además, las líneas añadidas, nombres nuevos y mensajes de cada
+#   commit de la rama. En main mira el árbol y los commits recién llegados
+#   (de github.event.before a GITHUB_SHA), mensajes de squash incluidos.
 #
-# Los patrones están escritos con clases de caracteres (por ejemplo [o]) para
-# que este archivo no se detecte a sí mismo: así también se revisa.
-# Nunca imprime lo encontrado, solo el archivo o el commit y la línea,
-# por si es un secreto.
+# Los patrones integrados usan clases de caracteres (por ejemplo [o]) para que
+# este archivo no se detecte a sí mismo. Nunca imprime lo encontrado ni los
+# patrones privados: solo el archivo o commit, la línea y la etiqueta.
 
 name: Lo público
 
@@ -29,6 +32,23 @@ on:
   pull_request:
   push:
     branches: [main, 'prueba/**']
+  workflow_call:
+    inputs:
+      revisar_log_sin_horas:
+        description: 'Comprueba que log.md no lleve marcas de hora (útil para Wiki)'
+        type: boolean
+        required: false
+        default: false
+    secrets:
+      LO_PUBLICO_BLOQUEO:
+        description: 'Patrones privados que bloquean en contenido/commits (uno por línea)'
+        required: false
+      LO_PUBLICO_AVISO:
+        description: 'Patrones privados que avisan sin bloquear (uno por línea)'
+        required: false
+      LO_PUBLICO_BLOQUEO_NOMBRES:
+        description: 'Patrones privados que bloquean en nombres de archivo (uno por línea)'
+        required: false
 
 permissions:
   contents: read
@@ -49,15 +69,24 @@ jobs:
           CABEZA_PR: ${{ github.event.pull_request.head.sha }}
           RAMA: ${{ github.ref_name }}
           ANTES: ${{ github.event.before }}
+          REGLAS_BLOQUEO: ${{ secrets.LO_PUBLICO_BLOQUEO }}
+          REGLAS_AVISO: ${{ secrets.LO_PUBLICO_AVISO }}
+          REGLAS_NOMBRES: ${{ secrets.LO_PUBLICO_BLOQUEO_NOMBRES }}
         run: |
           set -u
           fallos=0
           avisos=0
+          reglas_privadas=0
           trabajo=$(mktemp -d)
+          trap 'rm -rf "$trabajo"' EXIT
           contenido="$trabajo/contenido.txt"
           donde="$trabajo/donde.txt"
+          nombres_commit="$trabajo/nombres_commit.txt"
+          donde_nombres="$trabajo/donde_nombres.txt"
           : > "$contenido"
           : > "$donde"
+          : > "$nombres_commit"
+          : > "$donde_nombres"
 
           # Qué commits se miran uno a uno, además del árbol final.
           rango=""
@@ -66,8 +95,6 @@ jobs:
           elif [ "$EVENTO" = push ] && [ "$RAMA" != main ]; then
             rango="origin/main..$GITHUB_SHA"
           elif [ "$EVENTO" = push ]; then
-            # En main: lo que acaba de entrar. Sin un "antes" que exista en la
-            # historia (rama nueva o push forzado) solo se mira el árbol, y se avisa.
             if [ -n "${ANTES:-}" ] && ! [[ "$ANTES" =~ ^0+$ ]] && git cat-file -e "$ANTES^{commit}" 2>/dev/null; then
               rango="$ANTES..$GITHUB_SHA"
             else
@@ -75,9 +102,7 @@ jobs:
             fi
           fi
 
-          # Líneas añadidas y mensajes de cada commit, en dos archivos paralelos:
-          # $contenido es lo que se busca y $donde dice commit, archivo y línea.
-          # En un commit de fusión se mira lo que añade frente a su primer padre.
+          # Líneas añadidas, mensajes y nombres de archivos nuevos de cada commit.
           ncommits=0
           if [ -n "$rango" ]; then
             if ! commits=$(git rev-list --reverse "$rango"); then
@@ -97,10 +122,13 @@ jobs:
                 cab { next }
                 /^\+/ { print substr($0, 2) >> t; print "commit " c " · " f ":" n >> d; n++ }
               '
+              git -c core.quotePath=false show --format= --no-renames --diff-filter=A --name-only "$sha" \
+                | awk -v c="$corto" -v t="$nombres_commit" -v d="$donde_nombres" \
+                  'NF { print >> t; print "commit " c " · nombre de archivo nuevo" >> d }'
             done
           fi
 
-          anota() { # $1 = nivel, $2 = archivo y línea para la anotación (o vacío), $3 = dónde, $4 = descripción
+          anota() { # $1 = nivel, $2 = archivo y línea (o vacío), $3 = dónde, $4 = descripción
             if [ -n "$2" ]; then echo "::$1 $2::$4"; else echo "::$1::$3 · $4"; fi
             echo "- $1 · $3 · $4" >> "$GITHUB_STEP_SUMMARY"
             if [ "$1" = error ]; then fallos=$((fallos + 1)); else avisos=$((avisos + 1)); fi
@@ -140,26 +168,91 @@ jobs:
             fi
           }
 
+          # $1 = descripción, $2 = patrón ERE, $3... = opciones: busca en nombres de archivo.
+          revisa_nombres() {
+            local desc=$1 patron=$2
+            shift 2
+            local salida rc archivo num
+
+            rc=0
+            salida=$(git -c core.quotePath=false ls-files | grep -E "$@" -e "$patron") || rc=$?
+            if [ $rc -gt 1 ]; then
+              echo "::error::No pude revisar los nombres de archivo: $desc"
+              fallos=$((fallos + 1))
+            elif [ $rc -eq 0 ]; then
+              while IFS= read -r archivo; do
+                anota error "" "árbol · nombre de archivo \`$archivo\`" "$desc"
+              done <<< "$salida"
+            fi
+
+            [ -s "$nombres_commit" ] || return 0
+            rc=0
+            salida=$(grep -n -a -E "$@" -e "$patron" "$nombres_commit") || rc=$?
+            if [ $rc -gt 1 ]; then
+              echo "::error::No pude revisar los nombres de archivo en commits: $desc"
+              fallos=$((fallos + 1))
+            elif [ $rc -eq 0 ]; then
+              while IFS= read -r linea; do
+                num=${linea%%:*}
+                anota error "" "$(sed -n "${num}p" "$donde_nombres")" "$desc"
+              done <<< "$salida"
+            fi
+          }
+
+          # Aplica una lista de reglas recibida desde secreto (una por línea: Etiqueta::patron o patron).
+          aplica_lista() {
+            local modo=$1 lista=$2 defecto=$3
+            local linea desc patron
+            [ -n "$lista" ] || return 0
+            while IFS= read -r linea || [ -n "$linea" ]; do
+              linea=${linea%$'\r'}
+              [[ -z "${linea// /}" || "$linea" == \#* ]] && continue
+              if [[ "$linea" == *"::"* ]]; then
+                desc=${linea%%::*}
+                patron=${linea#*::}
+              else
+                desc=$defecto
+                patron=$linea
+              fi
+              [ -n "$patron" ] || continue
+              reglas_privadas=$((reglas_privadas + 1))
+              if [ "$modo" = nombres ]; then
+                revisa_nombres "$desc" "$patron" -i
+              else
+                revisa "$modo" "$desc" "$patron" -i
+              fi
+            done <<< "$lista"
+          }
+
           echo "### Lo público" >> "$GITHUB_STEP_SUMMARY"
 
-          # Bloquean
+          # Reglas universales (bloquean siempre)
           revisa error "Token clásico de GitHub (gh*_)" 'gh[pousr][_][A-Za-z0-9]{36}'
           revisa error "Token de grano fino de GitHub" 'github[_]pat[_][A-Za-z0-9_]{22,}'
           revisa error "client_id de una GitHub App" '(Iv2[3]li[A-Za-z0-9]{4,}|Iv1[.][a-f0-9]{16})'
           revisa error "Ruta de una máquina" '/(ho[m]e|User[s])/[A-Za-z0-9._-]+'
-          # También bloquea las referencias a issues de este repo escritas así.
-          # Convención (nucleo/README.md): en este repo se enlaza el issue
-          # (issues/N) y nunca se escribe la palabra «hilo» seguida de #N.
           revisa error "Número de hilo interno" 'hil[o][[:space:]]*#[0-9]+' -i
-          revisa error "Mención al repo privado del equipo" 'equip[o][-_ ]agentes' -i
 
-          # Avisan sin fallar: revisar a mano
-          revisa warning "Nombre de persona: revisar si debe ser público" 'Jose[b]a' -w
-          revisa warning "Nombre de proyecto privado: revisar si debe ser público" 'Curso[C]oach' -i
+          # Reglas privadas configuradas por secreto del repositorio (opcionales)
+          aplica_lista error "${REGLAS_BLOQUEO:-}" "Término restringido (LO_PUBLICO_BLOQUEO)"
+          aplica_lista warning "${REGLAS_AVISO:-}" "Término a revisar a mano (LO_PUBLICO_AVISO)"
+          aplica_lista nombres "${REGLAS_NOMBRES:-}" "Nombre de archivo restringido (LO_PUBLICO_BLOQUEO_NOMBRES)"
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Commits revisados uno a uno: $ncommits · Bloqueos: $fallos · Avisos: $avisos" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "Commits revisados uno a uno: $ncommits · Reglas privadas activas: $reglas_privadas · Bloqueos: $fallos · Avisos: $avisos" | tee -a "$GITHUB_STEP_SUMMARY"
           if [ "$fallos" -gt 0 ]; then
             echo "::error::Hay $fallos líneas que no pueden ser públicas. Quítalas antes de fusionar. Si alguna estuvo en un commit, borrarla no basta: avisa y rota el secreto."
             exit 1
           fi
+
+      - name: log.md sin horas
+        if: ${{ inputs.revisar_log_sin_horas }}
+        shell: bash
+        run: |
+          if [ -f log.md ] && grep -nE '(^|[^0-9])([01][0-9]|2[0-3])[:h][0-5][0-9]([^0-9]|$)' log.md > /tmp/horas.txt; then
+            while IFS=: read -r num _; do
+              echo "::error file=log.md,line=$num::log.md lleva una hora; solo fecha y operación"
+            done < /tmp/horas.txt
+            exit 1
+          fi
+          echo "log.md sin horas"
