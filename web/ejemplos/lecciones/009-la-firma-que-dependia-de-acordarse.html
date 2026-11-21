@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>009 · La firma que dependía de acordarse · harness</title>
+<meta name="description" content="Es como dejarse las llaves puestas: cada vez prometes fijarte, y te fijas, hasta el día que no. La solución no es prometerlo con más fuerza, sino una puerta que no cierre si las llaves están puestas.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../../nucleo/index.html">Núcleo</a></li><li><a href="../../herramientas/index.html">Herramientas</a></li><li><a href="../../especialistas/index.html">Especialistas</a></li><li><a href="../../flujos/index.html">Flujos</a></li><li><a href="../../ejemplos/index.html" aria-current="page">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">009 · La firma que dependía de acordarse</li></ol></nav>
+
+<article class="doc"><h1>009 · La firma que dependía de acordarse</h1><ul>
+<li><strong>Cuándo:</strong> cuando una regla de forma (la firma del commit, un formato, qué no se escribe en un mensaje) se tiene que cumplir en cada commit y su cumplimiento depende de que el agente se acuerde.
+</li>
+<li><strong>Qué hacer:</strong> una regla que se rompe más de dos veces no se vuelve a recordar: se comprueba con una herramienta. Mientras no exista, quien hace el commit comprueba el autor justo después y avisa si falla.
+</li>
+<li><strong>Pruebas:</strong> desde que se decidió la firma común, siete commits de un mismo agente salieron con otro autor, en tres tandas a lo largo de casi un mes. Cada vez se dijo «el siguiente ya va bien», y el siguiente iba bien, hasta el próximo.
+</li>
+<li><strong>Seguridad:</strong> media. No se filtró nada, pero en un repo público una firma con un nombre de máquina o una dirección interna es información que no tiene que salir.
+</li></ul>
+<h2 id="qué-pasó-en-llano">Qué pasó, en llano</h2>
+<p>Es como dejarse las llaves puestas: cada vez prometes fijarte, y te fijas, hasta el día que no. La solución no es prometerlo con más fuerza, sino una puerta que no cierre si las llaves están puestas.</p>
+<h2 id="qué-cambió-en-el-harness">Qué cambió en el harness</h2>
+<ul>
+<li><strong>Hecho:</strong> la skill de ese agente prohíbe cambiar el autor a mano y obliga a comprobarlo después de cada commit o fusión.
+</li>
+<li><strong>Propuesto, aún sin hacer:</strong> que la comprobación automática de cada PR falle si un commit no lleva la firma acordada, y que <code>equipo.py</code> compruebe su propio commit al apuntar. Así la regla deja de depender de la memoria.
+</li>
+<li><strong>La misma idea ya se aplicó a lo público:</strong> la Action <a href="https://github.com/JosebaDG/harness/blob/main/.github/workflows/lo-publico.yml"><code>lo-publico.yml</code></a> revisa cada commit y su mensaje, no solo cómo quedan los archivos.
+</li></ul></article><nav class="pasos" aria-label="Más en Ejemplos"><a class="ant" href="../../ejemplos/lecciones/008-la-decision-que-no-llego-a-la-skill.html"><span>Anterior</span>008 · La decisión que no llegó a la skill</a><a class="sig" href="../../ejemplos/lecciones/010-la-reaccion-que-se-apunto-como-decision.html"><span>Siguiente</span>010 · La reacción que se apuntó como decisión</a></nav><p class="acciones"><a class="boton" href="../../ejemplos/index.html">Volver a Ejemplos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/ejemplos/lecciones/009-la-firma-que-dependia-de-acordarse.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

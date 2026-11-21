@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Herramientas · harness</title>
+<meta name="description" content="Todo lo propio de cada equipo va en su configuración, no en el código. equipo.py y acceso.py solo usan la biblioteca estándar de Python 3.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../nucleo/index.html">Núcleo</a></li><li><a href="../herramientas/index.html" aria-current="page">Herramientas</a></li><li><a href="../especialistas/index.html">Especialistas</a></li><li><a href="../flujos/index.html">Flujos</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li aria-current="page">Herramientas</li></ol></nav>
+
+<h1>Herramientas</h1><p>Todo lo propio de cada equipo va en su configuración, no en el código. <code>equipo.py</code> y <code>acceso.py</code> solo usan la biblioteca estándar de Python 3.</p>
+<ul>
+<li><strong><code>equipo.py</code></strong>: el canal sobre issues. Lee, escribe, pasa el turno, saca la bandeja de cada agente, apunta el registro y busca las flags. Lo que no publica la persona (sola o con una de las Apps de <code>apps_propias</code>) es material externo: se enseña aparte, no da turno y, si se dirige a agentes, la bandeja avisa. Ayuda: <code>python3 equipo.py --prueba</code>.
+<ul>
+<li>En la bandeja, <code>SIGUES TÚ</code> sale cuando el turno es tuyo y el último mensaje también: te lo quedaste porque el trabajo siguiente es tuyo, así que se arranca en esa ronda o se pasa el turno. <code>TE TOCA</code> solo mira el turno que te pasa otro.
+</li>
+<li>Con <code>&quot;ciclo&quot;</code> en la config (minuto de cada agente, <code>horas</code> y <code>zona</code>), <code>ESPERA ÚNICA</code> sale cuando un hilo tiene el turno del anterior del ciclo y este no ha escrito desde su hora: una sola espera de como mucho 10 minutos y se sigue. El primero del ciclo no espera a nadie. Sin <code>&quot;ciclo&quot;</code>, no sale.
+</li>
+<li>Un hilo sin turno a propósito (espera una prueba o una fecha) lleva la etiqueta <code>hasta:AAAA-MM-DD</code> (fecha UTC). Hasta ese día ni la bandeja ni el tablero lo dan por parado; ese día la bandeja le saca al responsable <code>LLEGA LA FECHA</code>. Su responsable puede <code>escribir</code> en un hilo sin turno, y dar turno quita la etiqueta <code>hasta:</code>.
+</li>
+<li><code>tablero</code> reescribe un issue fijado, «Tablón», con tres partes: lo que le toca a la persona (el registro primero, luego las flags <code>espera:&lt;persona&gt;</code>, los hilos con su turno y los PR que piden su revisión), lo parado más de 3 días y los proyectos vivos. Lee el repo del canal y los de <code>&quot;tablero_repos&quot;</code> en la config. Con <code>--prueba</code> enseña el cuerpo sin escribir nada. La bandeja no trata el Tablón como hilo.
+</li></ul>
+</li>
+<li><strong><code>acceso.py</code></strong>: saca el token de cada agente por <em>device flow</em> de una GitHub App, sin secretos en el código. Ayuda: <code>python3 acceso.py --help</code>.
+</li>
+<li><strong><code>prueba-web.py</code></strong>: prueba de accesibilidad (axe-core, WCAG 2.2 AA) y de móvil para una web estática, en una carpeta o ya publicada. Las páginas y el selector del texto que debe caber en pantalla van por argumento. Sale con 1 si algo falla. Necesita Playwright y axe-core; la orden exacta está en su ayuda: <code>python3 prueba-web.py --help</code>.
+</li>
+<li><strong><code>pruebas/prueba_equipo.py</code></strong>: pruebas sin red de <code>equipo.py</code>, que pasa la Action de pruebas en cada PR.
+</li></ul>
+<h2 id="configuración-de-equipopy">Configuración de <code>equipo.py</code></h2>
+<p>Un JSON en <code>~/.config/equipo/config.json</code> (o donde diga <code>EQUIPO_CFG</code>):</p>
+<pre tabindex="0"><code>{
+  &quot;agente&quot;: &quot;Ana&quot;,
+  &quot;repo&quot;: &quot;tu-usuario/tu-canal&quot;,
+  &quot;humano&quot;: &quot;Tú&quot;,
+  &quot;agentes&quot;: [&quot;Ana&quot;, &quot;Bruno&quot;],
+  &quot;apps_propias&quot;: [&quot;slug-de-la-app-del-equipo&quot;],
+  &quot;token&quot;: &quot;~/.config/equipo/token.json&quot;
+}</code></pre>
+<p>Opcionales: <code>&quot;repos&quot;</code> para buscar flags en más repos, <code>&quot;humano_login&quot;</code> si tu usuario de GitHub no es el dueño del repo del canal, <code>&quot;tablero_repos&quot;</code> para los repos del tablón, <code>&quot;tablero_titulo&quot;</code> si el issue no se llama «Tablón» y <code>&quot;zona&quot;</code> para la hora del tablón (si no, la de <code>&quot;ciclo&quot;</code>, y si no, UTC).</p><p class="acciones"><a class="boton secundario" href="https://github.com/JosebaDG/harness/tree/main/herramientas">Ver la carpeta en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

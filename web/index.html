@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>harness</title>
+<meta name="description" content="Método y herramientas para que una persona y un equipo de agentes de IA trabajen juntos sobre GitHub. Cada issue es un hilo con turno, lo decidido vive en un registro con su porqué y lo que se publica pasa antes por una revisión de lo público.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="nucleo/index.html">Núcleo</a></li><li><a href="herramientas/index.html">Herramientas</a></li><li><a href="especialistas/index.html">Especialistas</a></li><li><a href="flujos/index.html">Flujos</a></li><li><a href="ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+
+
+<section class="portada"><h1>harness</h1><p>Método y herramientas para que una persona y un equipo de agentes de IA trabajen juntos sobre GitHub. Cada issue es un hilo con turno, lo decidido vive en un registro con su porqué y lo que se publica pasa antes por una revisión de lo público.</p>
+<p>No depende de un proveedor de IA concreto.</p><p class="acciones"><a class="boton" href="nucleo/index.html">Empieza por el núcleo</a> <a class="boton secundario" href="#requisitos">Requisitos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness">Ver en GitHub</a></p><div class="clonar"><p class="etiqueta" id="clonar">Para empezar, clona el repo</p><pre tabindex="0" aria-labelledby="clonar"><code>git clone https://github.com/JosebaDG/harness</code></pre></div></section><section class="bloque" aria-labelledby="que-hay"><h2 id="que-hay">Qué hay dentro</h2><ul class="tarjetas"><li class="tarjeta"><a href="nucleo/index.html"><strong>Núcleo</strong><span class="cuenta">3 documentos</span><span>El protocolo genérico del equipo: turnos, responsable de cada hilo, registro de decisiones, flags y reglas de lo público, con una plantilla vacía del registro y el glosario. En el núcleo van roles, no nombres.</span></a></li><li class="tarjeta"><a href="herramientas/index.html"><strong>Herramientas</strong><span>Todo lo propio de cada equipo va en su configuración, no en el código. equipo.py y acceso.py solo usan la biblioteca estándar de Python 3.</span></a></li><li class="tarjeta"><a href="especialistas/index.html"><strong>Especialistas</strong><span class="cuenta">21 fichas</span><span>Un gorro es un rol con ficha propia que un agente se pone durante un ciclo sin cambiar su ficha. Cada gorro dice qué decide y qué no, cómo trabaja y qué deja escrito, qué no hace sin la persona y cuándo se usa. Todos sig</span></a></li><li class="tarjeta"><a href="flujos/index.html"><strong>Flujos</strong><span class="cuenta">2 flujos</span><span>Flujos de trabajo de principio a fin: qué especialistas hacen falta, en qué orden y qué entrega cada uno. Cada flujo dice si ya se ha probado en un trabajo real o si está sin probar.</span></a></li><li class="tarjeta"><a href="ejemplos/index.html"><strong>Ejemplos</strong><span class="cuenta">14 ejemplos y lecciones</span><span>Pruebas reales de los flujos y lecciones aprendidas, reescritas en genérico: qué pasó, qué regla salió y cómo se comprobó. Los nombres de personas, repos privados y proyectos se quitan; lo que queda es lo que le sirve a </span></a></li></ul></section><section class="bloque"><h2 id="para-quién">Para quién</h2>
+<p>Para quien ya trabaja con uno o varios agentes de IA y quiere que el trabajo quede ordenado en GitHub: quién habla en cada momento, qué está decidido y por qué, y quién revisa qué.</p></section><section class="bloque"><h2 id="requisitos">Requisitos</h2>
+<ul>
+<li><strong>Una cuenta de GitHub y un repo privado propio</strong> para el canal del equipo. El canal habla de cómo trabajáis; este repo solo trae el método.
+</li>
+<li><strong>Una GitHub App propia</strong>, creada por ti e instalada en ese repo, con lectura y escritura en Issues y Contents y el device flow activado. Así cada agente entra sin que nadie pegue tokens en un chat.
+</li>
+<li><strong>Agentes que ejecuten Python 3</strong> (solo la biblioteca estándar) y puedan llamar a la API de GitHub: un agente de terminal, un asistente con máquina propia o un script programado.
+</li>
+<li><strong>Una forma de programar la revisión</strong> de cada agente: cron, rutina o tarea programada.
+</li>
+<li><strong>Una persona que decide</strong> lo que se publica, se gasta, se borra, los servicios nuevos y los cambios de rumbo. Eso no lo hace ningún agente.
+</li></ul>
+<p>No damos un tiempo de arranque: todavía no está medido.</p></section>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

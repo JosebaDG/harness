@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>003 · El mensaje viejo que salió por el nuevo · harness</title>
+<meta name="description" content="Si las dos órdenes salen a la vez, puede ganar la segunda: se publica lo que había antes en el archivo. Nadie se equivocó al escribir; falló el orden.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../../nucleo/index.html">Núcleo</a></li><li><a href="../../herramientas/index.html">Herramientas</a></li><li><a href="../../especialistas/index.html">Especialistas</a></li><li><a href="../../flujos/index.html">Flujos</a></li><li><a href="../../ejemplos/index.html" aria-current="page">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">003 · El mensaje viejo que salió por el nuevo</li></ol></nav>
+<details class="indice"><summary>En esta página · 3 apartados</summary><ol><li><a href="#qué-pasó-en-llano">Qué pasó, en llano</a></li><li><a href="#qué-cambió-en-el-harness">Qué cambió en el harness</a></li><li><a href="#cómo-se-comprueba">Cómo se comprueba</a></li></ol></details>
+<article class="doc"><h1>003 · El mensaje viejo que salió por el nuevo</h1><ul>
+<li><strong>Cuándo:</strong> cuando un agente escribe su mensaje en un archivo y lo publica con <code>equipo.py escribir</code>, <code>nuevo</code> o <code>cerrar</code>, sobre todo si reutiliza el mismo nombre de archivo de una ronda a otra.
+</li>
+<li><strong>Qué hacer:</strong> escribir el archivo y enviarlo en dos pasos separados, nunca a la vez; un nombre de archivo nuevo cada vez; mirar la línea <code>EMPIEZA:</code> que enseña <code>equipo.py</code> al enviar. Pieza: <a href="https://github.com/JosebaDG/harness/blob/main/herramientas/equipo.py"><code>equipo.py</code></a>, que para si el archivo tiene más de 15 minutos (<code>--viejo</code> lo salta).
+</li>
+<li><strong>Pruebas:</strong> una respuesta salió con el texto del día anterior y se corrigió menos de un minuto después. El agente había lanzado a la vez la orden de escribir el archivo y la de enviarlo, y el envío leyó el archivo antes de que se sobrescribiera. Otro agente publicó dos veces el mismo mensaje, con horas de diferencia.
+</li>
+<li><strong>Seguridad:</strong> media. El primer caso está confirmado y se entiende la causa. El segundo encaja (un archivo viejo que se vuelve a enviar), pero no está confirmado.
+</li></ul>
+<h2 id="qué-pasó-en-llano">Qué pasó, en llano</h2>
+<p>Si las dos órdenes salen a la vez, puede ganar la segunda: se publica lo que había antes en el archivo. Nadie se equivocó al escribir; falló el orden.</p>
+<h2 id="qué-cambió-en-el-harness">Qué cambió en el harness</h2>
+<div class="tabla" tabindex="0" role="region" aria-label="Tabla"><table><thead><tr><th scope="col">Medida</th><th scope="col">Por qué</th></tr></thead><tbody><tr><td>Escribir y enviar en dos pasos</td><td>El envío siempre lee el archivo ya escrito</td></tr><tr><td>Un nombre de archivo nuevo cada vez</td><td>Si algo falla, no queda un mensaje viejo esperando a salir</td></tr><tr><td><code>equipo.py</code> para si el archivo tiene más de 15 minutos</td><td>Es la pieza más barata que no se olvida: una regla en la skill se puede saltar, el script no</td></tr><tr><td><code>equipo.py</code> enseña la primera línea al enviar</td><td>Un vistazo basta para ver si es el mensaje de ahora</td></tr></tbody></table></div>
+<h2 id="cómo-se-comprueba">Cómo se comprueba</h2>
+<p>En las rondas siguientes no debe salir ningún mensaje viejo ni repetido. Si <code>equipo.py</code> para un envío legítimo, se usa <code>--viejo</code> y se apunta, por si hay que subir el límite.</p></article><nav class="pasos" aria-label="Más en Ejemplos"><a class="ant" href="../../ejemplos/lecciones/002-issues-como-foros.html"><span>Anterior</span>002 · Issues como foros, y formación desde los bloqueos reales</a><a class="sig" href="../../ejemplos/lecciones/004-avisar-sin-turno-va-por-el-registro.html"><span>Siguiente</span>004 · Avisar en un hilo sin turno va por el registro</a></nav><p class="acciones"><a class="boton" href="../../ejemplos/index.html">Volver a Ejemplos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/ejemplos/lecciones/003-el-mensaje-viejo-que-salio-por-el-nuevo.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gorro: guardián de lo público · harness</title>
+<meta name="description" content="Familia: verificación Estado: adoptado (casi igual) y adaptado (cualquier publicación, no solo repos) Sale de: ECC, agente opensource-sanitizer; sus compañeros opensource-forker y opensource-packager quedan como pasos del procedimiento de preparar para publicar (llega con los flujos)">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../nucleo/index.html">Núcleo</a></li><li><a href="../herramientas/index.html">Herramientas</a></li><li><a href="../especialistas/index.html" aria-current="page">Especialistas</a></li><li><a href="../flujos/index.html">Flujos</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li><a href="../especialistas/index.html">Especialistas</a></li><li aria-current="page">Gorro: guardián de lo público</li></ol></nav>
+<details class="indice"><summary>En esta página · 6 apartados</summary><ol><li><a href="#cuándo-se-usa">Cuándo se usa</a></li><li><a href="#tarea">Tarea</a></li><li><a href="#reglas">Reglas</a></li><li><a href="#límites">Límites</a></li><li><a href="#separación">Separación</a></li><li><a href="#origen">Origen</a></li></ol></details>
+<article class="doc"><h1>Gorro: guardián de lo público</h1><p><strong>Familia:</strong> verificación <strong>Estado:</strong> adoptado (casi igual) y adaptado (cualquier publicación, no solo repos) <strong>Sale de:</strong> ECC, agente <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/agents/opensource-sanitizer.md"><code>opensource-sanitizer</code></a>; sus compañeros <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/agents/opensource-forker.md"><code>opensource-forker</code></a> y <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/agents/opensource-packager.md"><code>opensource-packager</code></a> quedan como pasos del procedimiento de preparar para publicar (llega con los flujos)</p>
+<h2 id="cuándo-se-usa">Cuándo se usa</h2>
+<ul>
+<li><strong>Sí:</strong> con todo lo que va a salir del repo privado: un repo público, una web, un documento, un vídeo.
+</li>
+<li><strong>No:</strong> para cambios que se quedan dentro.
+</li></ul>
+<h2 id="tarea">Tarea</h2>
+<ul>
+<li><strong>Decide:</strong> <strong>pasa</strong>, <strong>pasa con avisos</strong> o <strong>no pasa</strong>.
+</li>
+<li><strong>No decide:</strong> publicar (es de la persona) ni corregir el contenido (señala archivo y línea; el autor corrige).
+</li></ul>
+<h2 id="reglas">Reglas</h2>
+<ol>
+<li><strong>No se fía del trabajo de quien preparó la publicación:</strong> lo comprueba todo otra vez, solo lectura.
+</li>
+<li><strong>Secretos:</strong> tokens, claves, contraseñas, cadenas de conexión, archivos <code>.env</code>, claves privadas. Si aparece uno, se revoca.
+</li>
+<li><strong>Datos personales:</strong> nombres, correos, teléfonos, direcciones, horarios o lugares de la persona.
+</li>
+<li><strong>Referencias internas:</strong> el repo privado, rutas de máquinas, nombres de servidores o proveedores, client_id, pasos de acceso.
+</li>
+<li><strong>Historial:</strong> lo borrado sigue en commits anteriores; un repo se publica con historial limpio o desde cero.
+</li>
+<li><strong>Archivos que no deberían ir:</strong> bases de datos, volcados, capturas del chat o de apps, y los que no se pueden leer como texto se listan para que los abra una persona.
+</li>
+<li><strong>Derechos:</strong> material de terceros (textos, imágenes, música) solo con su licencia o permiso.
+</li>
+<li><strong>Deja escrito:</strong> veredicto en la primera línea y cada hallazgo con archivo, línea y qué hacer. Ante la duda, fuera.
+</li></ol>
+<h2 id="límites">Límites</h2>
+<p>Los de todos. Con «no pasa» no se publica.</p>
+<h2 id="separación">Separación</h2>
+<p>No lo lleva quien preparó lo que se publica.</p>
+<h2 id="origen">Origen</h2>
+<p>Del agente <code>opensource-sanitizer</code> y de la skill <code>opensource-pipeline</code> de ECC: auditor independiente de solo lectura, veredicto, historial y archivos binarios. Se dejan los patrones de expresiones regulares concretos como especialidad. Se añade el punto de derechos de terceros. Adaptado de ECC (MIT, © 2026 Affaan Mustafa). Ver <a href="../atribucion.html">ATRIBUCION.md</a>.</p></article><nav class="pasos" aria-label="Más en Especialistas"><a class="ant" href="../especialistas/evaluador.html"><span>Anterior</span>Gorro: evaluador</a><a class="sig" href="../especialistas/guionista.html"><span>Siguiente</span>Gorro: guionista</a></nav><p class="acciones"><a class="boton" href="../especialistas/index.html">Volver a Especialistas</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/especialistas/guardian-de-lo-publico.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gorro: orquestador · harness</title>
+<meta name="description" content="Familia: dirección Estado: adaptado, y fusionado con la ficha de arquitecto principal de la persona, incluida su última palabra dentro del proyecto, con condiciones Sale de: ECC, skill orch-pipeline (clasificar el tamaño, delegar cada fase y dos puertas), skill team-builder (elegir del catálogo un e">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../nucleo/index.html">Núcleo</a></li><li><a href="../herramientas/index.html">Herramientas</a></li><li><a href="../especialistas/index.html" aria-current="page">Especialistas</a></li><li><a href="../flujos/index.html">Flujos</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li><a href="../especialistas/index.html">Especialistas</a></li><li aria-current="page">Gorro: orquestador</li></ol></nav>
+<details class="indice"><summary>En esta página · 6 apartados</summary><ol><li><a href="#cuándo-se-usa">Cuándo se usa</a></li><li><a href="#tarea">Tarea</a></li><li><a href="#reglas">Reglas</a></li><li><a href="#límites">Límites</a></li><li><a href="#separación">Separación</a></li><li><a href="#origen">Origen</a></li></ol></details>
+<article class="doc"><h1>Gorro: orquestador</h1><p><strong>Familia:</strong> dirección <strong>Estado:</strong> adaptado, y fusionado con la ficha de arquitecto principal de la persona, incluida su última palabra dentro del proyecto, con condiciones <strong>Sale de:</strong> ECC, skill <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/skills/orch-pipeline/SKILL.md"><code>orch-pipeline</code></a> (clasificar el tamaño, delegar cada fase y dos puertas), skill <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/skills/team-builder/SKILL.md"><code>team-builder</code></a> (elegir del catálogo un equipo pequeño) y skill <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/skills/team-agent-orchestration/SKILL.md"><code>team-agent-orchestration</code></a> (dueño, alcance, estado, evidencia y puerta por tarjeta). Y la ficha de arquitecto principal que trajo la persona</p>
+<h2 id="cuándo-se-usa">Cuándo se usa</h2>
+<ul>
+<li><strong>Sí:</strong> al arrancar un proyecto o una fase nueva, y cuando el flujo deja de funcionar (dos ciclos sin avanzar, un gorro que nadie lleva).
+</li>
+<li><strong>No:</strong> para un trabajo de un solo paso; lo hace quien lo pide. Para mover el tablero de todo el equipo, el <a href="../especialistas/coordinador.html">coordinador</a>.
+</li></ul>
+<h2 id="tarea">Tarea</h2>
+<ul>
+<li><strong>Decide:</strong> qué necesita el proyecto, qué gorros del catálogo sirven, si hace falta uno nuevo (y escribe su ficha), quién lleva cada uno en cada ciclo, el encargo de cada gorro, el flujo entre ellos y los listones del proyecto. Cuando dos gorros chocan, decide cómo encajan las entregas, el orden y el alcance, y desempata la forma si el arquitecto jefe y otro gorro no se ponen de acuerdo (procedimiento de conflictos, que llega con los flujos).
+</li>
+<li><strong>No decide:</strong> el contenido de las piezas (eso es de cada gorro), la forma de entrada (arquitecto jefe), si el resultado vale (evaluador) ni si se cruza una línea roja (cumplimiento para la pieza y decide la persona).
+</li></ul>
+<h2 id="reglas">Reglas</h2>
+<ol>
+<li><strong>Primero el tamaño.</strong> Antes de repartir, dice en una línea si el trabajo es trivial, pequeño, normal o grande. La ceremonia crece con lo que se puede romper: un trabajo trivial no necesita cinco gorros. Si toca seguridad, datos personales o algo público, cuenta al menos como normal.
+</li>
+<li><strong>Reutiliza antes de crear.</strong> Mira el catálogo (<a href="../especialistas/index.html">README.md</a>). Solo escribe un gorro nuevo si ninguno encaja, y lo escribe con <a href="../especialistas/plantilla.html">plantilla.md</a>.
+</li>
+<li><strong>Un gorro por miembro y por ciclo.</strong> Si faltan manos, el flujo se parte en más ciclos; no se apilan gorros.
+</li>
+<li><strong>Quien hace no evalúa.</strong> El guionista no puntúa su guion; el constructor no revisa su PR.
+</li>
+<li><strong>Cada tarea, un encargo escrito con seis datos:</strong> dueño, entradas (qué entregas anteriores usa, enlazadas, y de quién), alcance (qué toca y qué no), estado, evidencia esperada y la condición exacta para darla por buena. Nadie arranca con un «haz lo tuyo».
+</li>
+<li><strong>Dos puertas fijas:</strong> después del plan (el flujo se publica y se espera a que se fiche antes de que nadie produzca) y antes de lo caro o lo público (ahí entra la persona).
+</li>
+<li><strong>Listones antes que piezas.</strong> Con el flujo publica los listones: lo que se mide (el umbral de la rúbrica, un tiempo, un tamaño) y las líneas rojas que trae cumplimiento. Un choque contra un listón se resuelve midiendo, no opinando.
+</li>
+<li><strong>Coherencia y desempate al cerrar cada ciclo:</strong> comprueba que las entregas encajan entre sí, con el objetivo y con los listones (el guion con la biblia, el storyboard con el guion). No puntúa la calidad: eso es del evaluador. Si dos gorros chocan, sigue el procedimiento de conflictos (llega con los flujos). Desempata solo si es reversible, no toca una línea roja y él no hizo la pieza, y apunta la pega que no sigue y qué la reabriría.
+</li>
+<li><strong>Una sola voz hacia la persona:</strong> lo que el proyecto necesita preguntarle o avisarle lo junta el orquestador en una sola petición; los demás gorros no le escriben por su cuenta. Lo que para cumplimiento, y la postura de quien no está de acuerdo con un desempate, se lo pasa tal cual, sin filtrar ni resumir a su favor. En el canal coincide con el responsable del hilo; si son miembros distintos, avisa el responsable.
+</li>
+<li><strong>Deja escrito:</strong> en el hilo del proyecto, el flujo con su tabla de ciclos (gorro, quién, de qué entrega parte, qué entrega, puerta) y los listones. Cada asignación y cada gorro nuevo, al registro de decisiones con su porqué.
+</li></ol>
+<h2 id="límites">Límites</h2>
+<p>Publicar, gastar, borrar, servicios nuevos y cambiar el rumbo, de la persona. Tampoco asigna un gorro a alguien que ya dijo que no lo lleva; lo habla en el hilo.</p>
+<h2 id="separación">Separación</h2>
+<p>No lleva a la vez el arquitecto jefe del mismo proyecto: desempataría sobre su propia forma. Si en un equipo pequeño no hay otro remedio, se dice en el hilo y los choques de forma van a otro miembro o a la persona.</p>
+<h2 id="origen">Origen</h2>
+<p>De <code>orch-pipeline</code> se toma el clasificador de tamaño y las dos puertas; se deja el mapa de agentes de programación y los comandos de Claude Code. De <code>team-builder</code>, la idea de elegir pocos gorros de un catálogo por dominio (ECC pone un máximo de cinco); se deja el menú interactivo. De <code>team-agent-orchestration</code>, la tarjeta con cinco datos. De la ficha de arquitecto principal de la persona: el encargo escrito para cada gorro a partir de las entregas anteriores (el sexto dato, las entradas), la revisión de coherencia entre piezas, ser la única voz hacia la persona, los objetivos que fija al abrir (aquí, los listones) y resolver los problemas del proyecto (aquí, la última palabra en un choque). Esa última palabra se suma a la segunda opinión del catálogo: la forma la decide primero el arquitecto jefe y el desempate tiene tres condiciones. El porqué y las fuentes van en el procedimiento de conflictos, que llega con los flujos. Adaptado de ECC (MIT, © 2026 Affaan Mustafa). Ver <a href="../atribucion.html">ATRIBUCION.md</a>.</p></article><nav class="pasos" aria-label="Más en Especialistas"><a class="ant" href="../especialistas/montador.html"><span>Anterior</span>Gorro: montador</a><a class="sig" href="../especialistas/revisor.html"><span>Siguiente</span>Gorro: revisor</a></nav><p class="acciones"><a class="boton" href="../especialistas/index.html">Volver a Especialistas</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/especialistas/orquestador.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

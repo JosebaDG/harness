@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Núcleo · harness</title>
+<meta name="description" content="El protocolo genérico del equipo: turnos, responsable de cada hilo, registro de decisiones, flags y reglas de lo público, con una plantilla vacía del registro y el glosario. En el núcleo van roles, no nombres.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../nucleo/index.html" aria-current="page">Núcleo</a></li><li><a href="../herramientas/index.html">Herramientas</a></li><li><a href="../especialistas/index.html">Especialistas</a></li><li><a href="../flujos/index.html">Flujos</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li aria-current="page">Núcleo</li></ol></nav>
+
+<h1>Núcleo</h1><p>El protocolo genérico del equipo: turnos, responsable de cada hilo, registro de decisiones, flags y reglas de lo público, con una plantilla vacía del registro y el glosario. En el núcleo van roles, no nombres.</p>
+<ul>
+<li><a href="../nucleo/protocolo.html">protocolo.md</a>: canal, etiquetas y flags, registro, turnos, ritmo, responsable, la persona, resiliencia y aprendizaje.
+</li>
+<li><a href="../nucleo/glosario.html">glosario.md</a>: las palabras del protocolo.
+</li>
+<li><a href="../nucleo/plantilla-decisiones.html">plantilla-decisiones.md</a>: el registro vacío, para copiar en el repo del canal.
+</li></ul>
+<p>Estas reglas de lo público ya están en vigor, porque las aplican las Actions <a href="https://github.com/JosebaDG/harness/blob/main/.github/workflows/lo-publico.yml"><code>lo-publico.yml</code></a> y <a href="https://github.com/JosebaDG/harness/blob/main/.github/workflows/autoria.yml"><code>autoria.yml</code></a>; la del autor, solo cuando el repo tiene <code>AUTOR_COMMITS</code>.</p>
+<h2 id="reglas-de-lo-público">Reglas de lo público</h2>
+<ul>
+<li><strong>Un secreto que llega a un commit se avisa y se rota.</strong> Vale aunque se corrija en el commit siguiente. Borrarlo no basta: el commit sigue a la vista en el PR, porque GitHub guarda la cabeza de cada PR aunque se borre la rama, y el <em>squash</em> solo limpia <code>main</code>. Quien lo vea avisa a la persona dueña del secreto, y esa persona lo revoca y crea uno nuevo antes de seguir. Por eso la Action revisa en cada PR las líneas añadidas de cada commit y sus mensajes, no solo cómo queda el árbol al final.
+</li>
+<li><strong>El mensaje del <em>squash</em> dice qué entra, no quién lo aprobó ni dónde.</strong> Se escribe al fusionar y no pasa por la revisión del PR, así que lo que diga queda publicado en <code>main</code> tal cual. Quien fusiona escribe solo el cambio: ni nombres de quien dio el visto bueno, ni canales, chats o fechas de conversaciones. La Action revisa en cada push a <code>main</code> los commits que acaban de entrar, mensajes incluidos, pero eso solo lo descubre cuando ya está publicado.
+</li>
+<li><strong>Cada commit lleva el autor acordado para el repo.</strong> Quien escribe fija ese autor en su configuración de git antes del primer commit. La Action <a href="https://github.com/JosebaDG/harness/blob/main/.github/workflows/autoria.yml"><code>autoria.yml</code></a> falla en un PR si algún commit lleva otro correo de autor. El autor acordado vive en <code>AUTOR_COMMITS</code>, no en el código: como variable del repo si el correo es público (el noreply de GitHub), o como secreto con ese nombre si es privado, porque el registro de la Action enseña las variables y solo tapa los secretos. Sin ninguna de las dos, la Action avisa y no comprueba. Los PR que llegan desde un fork no se miran.
+</li>
+<li><strong>Los issues de este repo se enlazan, no se numeran como hilos.</strong> Se escribe el enlace al issue (<code>issues/N</code>) y nunca la palabra «hilo» seguida de <code>#N</code>. Esa forma es la de los hilos del canal privado de un equipo, y la Action la bloquea siempre, también cuando señala un issue de aquí.
+</li></ul><section class="bloque" aria-labelledby="docs"><h2 id="docs">Documentos · 3</h2><ul class="tarjetas"><li class="tarjeta"><a href="../nucleo/protocolo.html"><strong>Protocolo</strong><span>Cómo trabajan una persona y un equipo de agentes de IA en un repo privado de GitHub, con un issue por hilo. Todo lo que se escribe en el canal pasa por herramientas/equipo.py.</span></a></li><li class="tarjeta"><a href="../nucleo/glosario.html"><strong>Glosario</strong><span>Las palabras del protocolo, en el orden en que aparecen.</span></a></li><li class="tarjeta"><a href="../nucleo/plantilla-decisiones.html"><strong>Plantilla del registro</strong><span>Copia lo que hay debajo de la línea en un DECISIONES.md en la raíz del repo del canal. equipo.py apunta añade las líneas y equipo.py decisiones las lee.</span></a></li></ul></section><p class="acciones"><a class="boton secundario" href="https://github.com/JosebaDG/harness/tree/main/nucleo">Ver la carpeta en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

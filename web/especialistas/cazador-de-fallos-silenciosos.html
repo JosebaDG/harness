@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gorro: cazador de fallos silenciosos · harness</title>
+<meta name="description" content="Familia: verificación Estado: adoptado en código; adaptado a informes y procesos de agentes Sale de: ECC, agente silent-failure-hunter">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../nucleo/index.html">Núcleo</a></li><li><a href="../herramientas/index.html">Herramientas</a></li><li><a href="../especialistas/index.html" aria-current="page">Especialistas</a></li><li><a href="../flujos/index.html">Flujos</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li><a href="../especialistas/index.html">Especialistas</a></li><li aria-current="page">Gorro: cazador de fallos silenciosos</li></ol></nav>
+<details class="indice"><summary>En esta página · 6 apartados</summary><ol><li><a href="#cuándo-se-usa">Cuándo se usa</a></li><li><a href="#tarea">Tarea</a></li><li><a href="#reglas">Reglas</a></li><li><a href="#límites">Límites</a></li><li><a href="#separación">Separación</a></li><li><a href="#origen">Origen</a></li></ol></details>
+<article class="doc"><h1>Gorro: cazador de fallos silenciosos</h1><p><strong>Familia:</strong> verificación <strong>Estado:</strong> adoptado en código; adaptado a informes y procesos de agentes <strong>Sale de:</strong> ECC, agente <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/agents/silent-failure-hunter.md"><code>silent-failure-hunter</code></a></p>
+<h2 id="cuándo-se-usa">Cuándo se usa</h2>
+<ul>
+<li><strong>Sí:</strong> en cosas que «parecen funcionar»: rutinas que corren solas, integraciones, informes generados por agentes, cadenas de herramientas.
+</li>
+<li><strong>No:</strong> como revisión general; es una pasada concreta.
+</li></ul>
+<h2 id="tarea">Tarea</h2>
+<ul>
+<li><strong>Decide:</strong> qué fallos están escondidos y su gravedad.
+</li>
+<li><strong>No decide:</strong> el arreglo.
+</li></ul>
+<h2 id="reglas">Reglas</h2>
+<p>Busca cinco cosas:</p>
+<ol>
+<li><strong>Errores tragados:</strong> un fallo que se convierte en vacío, en cero o en «no hay resultados» sin decir nada. En un agente: una búsqueda que falló y se cuenta como «no hay nada».
+</li>
+<li><strong>Registro pobre:</strong> avisos sin contexto, con la gravedad equivocada o que nadie lee.
+</li>
+<li><strong>Valores por defecto que tapan:</strong> un plan B que parece correcto y hace que el fallo aparezca lejos y tarde.
+</li>
+<li><strong>Errores que pierden su origen:</strong> se relanzan genéricos, sin la causa.
+</li>
+<li><strong>Falta de control:</strong> llamadas a red, archivos o servicios sin límite de tiempo ni vuelta atrás.
+</li>
+<li><strong>Deja escrito:</strong> cada hallazgo con dónde, gravedad, qué pasa, qué impacto tiene y cómo se arreglaría.
+</li></ol>
+<h2 id="límites">Límites</h2>
+<p>Los de todos.</p>
+<h2 id="separación">Separación</h2>
+<p>No caza en lo que él mismo construyó en el ciclo.</p>
+<h2 id="origen">Origen</h2>
+<p>Del agente <code>silent-failure-hunter</code> de ECC se toman los cinco objetivos y el formato de hallazgo; se añade el caso de los agentes (una consulta fallida no es un resultado vacío). Adaptado de ECC (MIT, © 2026 Affaan Mustafa). Ver <a href="../atribucion.html">ATRIBUCION.md</a>.</p></article><nav class="pasos" aria-label="Más en Especialistas"><a class="ant" href="../especialistas/cartografo.html"><span>Anterior</span>Gorro: cartógrafo</a><a class="sig" href="../especialistas/constructor.html"><span>Siguiente</span>Gorro: constructor</a></nav><p class="acciones"><a class="boton" href="../especialistas/index.html">Volver a Especialistas</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/especialistas/cazador-de-fallos-silenciosos.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flujo de ejemplo: de novela a vídeo · harness</title>
+<meta name="description" content="Para qué: un piloto de investigación. Un tráiler de 30 a 60 segundos de una novela, con permiso del autor por escrito y hecho con herramientas abiertas. Estado: sin probar. Sirve para ver cómo el orquestador reparte gorros en un equipo de una persona y cuatro agentes.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../nucleo/index.html">Núcleo</a></li><li><a href="../herramientas/index.html">Herramientas</a></li><li><a href="../especialistas/index.html">Especialistas</a></li><li><a href="../flujos/index.html" aria-current="page">Flujos</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li><a href="../flujos/index.html">Flujos</a></li><li aria-current="page">Flujo de ejemplo: de novela a vídeo</li></ol></nav>
+<details class="indice"><summary>En esta página · 3 apartados</summary><ol><li><a href="#gorros-que-necesita">Gorros que necesita</a></li><li><a href="#flujo-por-ciclos">Flujo por ciclos</a></li><li><a href="#reglas-del-flujo">Reglas del flujo</a></li></ol></details>
+<article class="doc"><h1>Flujo de ejemplo: de novela a vídeo</h1><p><strong>Para qué:</strong> un piloto de investigación. Un tráiler de 30 a 60 segundos de una novela, con permiso del autor por escrito y hecho con herramientas abiertas. <strong>Estado:</strong> sin probar. Sirve para ver cómo el <a href="../especialistas/orquestador.html">orquestador</a> reparte gorros en un equipo de una persona y cuatro agentes.</p>
+<h2 id="gorros-que-necesita">Gorros que necesita</h2>
+<div class="tabla" tabindex="0" role="region" aria-label="Tabla"><table><thead><tr><th scope="col">Gorro</th><th scope="col">Para qué en este piloto</th></tr></thead><tbody><tr><td><a href="../especialistas/orquestador.html">orquestador</a></td><td>Repartir gorros por ciclo, fijar la rúbrica, los listones y las puertas, desempatar choques y cerrar con acta y métricas</td></tr><tr><td><a href="../especialistas/arquitecto-jefe.html">arquitecto jefe</a></td><td>La cadena: de texto a escaleta, storyboard, planos y montaje. Qué herramienta va en cada paso y dónde corre</td></tr><tr><td><a href="../especialistas/investigador.html">investigador</a></td><td>Comparar las herramientas candidatas y la licencia de cada modelo</td></tr><tr><td><a href="../especialistas/cumplimiento.html">cumplimiento</a></td><td>El permiso del autor y las licencias de modelos y herramientas, antes de gastar</td></tr><tr><td><a href="../especialistas/cartografo.html">cartógrafo</a></td><td>La biblia de la novela: personajes, hechos y giros que no se destripan, con su página</td></tr><tr><td><a href="../especialistas/guionista.html">guionista</a></td><td>Escaleta y guion del tráiler, cada punto con su página</td></tr><tr><td><a href="../especialistas/director-de-arte.html">director de arte</a></td><td>Paquete de estilo y storyboard en papel</td></tr><tr><td><a href="../especialistas/constructor.html">constructor</a></td><td>Preparar la cadena en local, sin generar</td></tr><tr><td><a href="../especialistas/evaluador.html">evaluador</a></td><td>La rúbrica de fidelidad, en papel y luego en vídeo</td></tr><tr><td><a href="../especialistas/contrapeso.html">contrapeso</a></td><td>Objeciones antes de gastar en generación</td></tr><tr><td><a href="../especialistas/revisor.html">revisor</a></td><td>Revisar la cadena antes de generar</td></tr><tr><td><a href="../especialistas/montador.html">montador</a></td><td>Planos, montaje y registro de procedencia y coste</td></tr><tr><td><a href="../especialistas/guardian-de-lo-publico.html">guardián de lo público</a></td><td>Solo si se decide enseñar el tráiler fuera</td></tr><tr><td><a href="../especialistas/estratega-de-lanzamiento.html">estratega de lanzamiento</a></td><td>Solo si se decide publicar</td></tr></tbody></table></div>
+<h2 id="flujo-por-ciclos">Flujo por ciclos</h2>
+<p>Cuatro agentes, un gorro cada uno por ciclo. A, B, C y D son los agentes; el orquestador decide quién es quién.</p>
+<div class="tabla" tabindex="0" role="region" aria-label="Tabla"><table><thead><tr><th scope="col">Ciclo</th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">D</th><th scope="col">Puerta al final</th></tr></thead><tbody><tr><td>0. Diseño</td><td>orquestador</td><td>arquitecto jefe</td><td>investigador</td><td>cumplimiento</td><td>Flujo, cadena, rúbrica y líneas rojas escritos en el hilo</td></tr><tr><td>1. Papel</td><td>guionista</td><td>director de arte</td><td>constructor</td><td>cartógrafo</td><td>Guion, estilo y storyboard entregados</td></tr><tr><td>2. Evaluación en papel</td><td>guionista (arregla)</td><td>director de arte (arregla)</td><td>contrapeso</td><td>evaluador</td><td>Nota de fidelidad sobre el umbral. <strong>La persona decide</strong> si se gasta en planos</td></tr><tr><td>3. Planos y montaje</td><td>orquestador (métricas)</td><td>revisor</td><td>montador</td><td>evaluador (sobre el vídeo)</td><td>Tráiler con procedencia y coste, y acta</td></tr><tr><td>4. Opcional</td><td>estratega de lanzamiento</td><td>guardián de lo público</td><td></td><td></td><td><strong>La persona decide</strong> si se publica</td></tr></tbody></table></div>
+<h2 id="reglas-del-flujo">Reglas del flujo</h2>
+<ul>
+<li><strong>El evaluador de los ciclos 2 y 3</strong> no es quien escribió el guion ni quien hizo el storyboard. Mejor si tampoco escribió la biblia.
+</li>
+<li><strong>El arquitecto jefe</strong> no es el orquestador ni quien propuso el proyecto, para que la forma de la cadena tenga una segunda opinión.
+</li>
+<li><strong>Listones del ciclo 0:</strong> el umbral de la rúbrica y las líneas rojas (el permiso del autor por escrito y herramientas cuya licencia permita el uso). Si dos gorros chocan, la forma de la cadena la decide el arquitecto jefe y el orquestador desempata.
+</li>
+<li><strong>Hasta la puerta del ciclo 2 no se gasta nada:</strong> todo es texto, imágenes de referencia y pruebas en local.
+</li>
+<li><strong>Métricas al cerrar:</strong> horas por ciclo, coste, nota de fidelidad por criterio y qué se rehizo y por qué.
+</li></ul>
+<p>Cuando se pruebe, la prueba va a <a href="../ejemplos/index.html">ejemplos/</a> y este flujo cambia de estado.</p></article><nav class="pasos" aria-label="Más en Flujos"><a class="ant" href="../flujos/escaparate-web.html"><span>Anterior</span>Flujo: cambio en el escaparate web</a><span></span></nav><p class="acciones"><a class="boton" href="../flujos/index.html">Volver a Flujos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/flujos/novela-a-video.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

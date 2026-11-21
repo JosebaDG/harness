@@ -1,5 +1,8 @@
 # Publica web/ en GitHub Pages al fusionar en main y prueba lo publicado.
 #
+# Antes de publicar rehace web/ con web/generar.py a partir de los .md del
+# repo, así la web no se queda atrás cuando cambia un documento.
+#
 # Mientras web/ no tenga index.html no publica nada: el trabajo sale en verde
 # y lo dice en el resumen. Después de publicar pasa herramientas/prueba-web.py
 # sobre la dirección publicada, en todas las páginas index.html de web/.
@@ -13,6 +16,7 @@ on:
     branches: [main]
     paths:
       - 'web/**'
+      - '**.md'
       - 'herramientas/prueba-web.py'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -31,6 +35,11 @@ jobs:
       hay_web: ${{ steps.mira.outputs.hay_web }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Rehacer web/ desde los .md
+        shell: bash
+        run: |
+          if [ -f web/generar.py ]; then python3 web/generar.py; fi
 
       - name: ¿Hay web que publicar?
         id: mira

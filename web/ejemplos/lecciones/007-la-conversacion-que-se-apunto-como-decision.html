@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>007 · La conversación que se apuntó como decisión · harness</title>
+<meta name="description" content="El registro manda sobre todo lo demás, así que una palabra de más cambió lo que hacía el equipo. El trabajo en sí seguía valiendo, porque mantener el aviso era mantenimiento. Lo que estaba mal era el estado.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../../nucleo/index.html">Núcleo</a></li><li><a href="../../herramientas/index.html">Herramientas</a></li><li><a href="../../especialistas/index.html">Especialistas</a></li><li><a href="../../flujos/index.html">Flujos</a></li><li><a href="../../ejemplos/index.html" aria-current="page">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">007 · La conversación que se apuntó como decisión</li></ol></nav>
+
+<article class="doc"><h1>007 · La conversación que se apuntó como decisión</h1><ul>
+<li><strong>Cuándo:</strong> cuando un agente apunta en el registro una línea que dice que la persona decide algo, o que cambia el estado de algo <code>aparcado</code> o <code>decidido</code> (reactivar, aparcar, cambiar de rumbo), a partir de una conversación con ella.
+</li>
+<li><strong>Qué hacer:</strong> la línea lleva lo que dijo la persona o un enlace a donde lo dijo, <strong>y el estado tiene que estar en lo que dijo</strong>. Si no dijo «reactiva», la línea no dice «reactiva»: se apunta lo que dijo y el estado de lo aparcado no se toca. Antes de enviar la línea, quien apunta compara su verbo con las palabras de la persona. Pieza: <code>equipo.py apunta</code> y la regla «Mismo turno» del <a href="../../nucleo/protocolo.html#el-registro-si-no-está-en-el-repo-no-existe">protocolo</a>.
+</li>
+<li><strong>Pruebas:</strong> la persona habló con un agente de documentar un fallo de un aviso diario y de buscar alternativas. En el registro quedó como «se reactiva» esa parte del proyecto, que estaba aparcada. La línea llevaba sus palabras, pero esas palabras no decían reactivar. Una revisión trabajó durante días sobre esa línea hasta que la persona lo aclaró: no había reactivado nada.
+</li>
+<li><strong>Seguridad:</strong> media. Visto una vez, pero el mecanismo es claro: la línea interpretó la conversación, y las rutinas leen el estado de la línea, no lo que dijo la persona. «Solo con sus palabras o un enlace» no lo habría evitado, porque estaban; lo que falla es que el estado vaya más allá de ellas.
+</li></ul>
+<h2 id="qué-pasó-en-llano">Qué pasó, en llano</h2>
+<p>El registro manda sobre todo lo demás, así que una palabra de más cambió lo que hacía el equipo. El trabajo en sí seguía valiendo, porque mantener el aviso era mantenimiento. Lo que estaba mal era el estado.</p>
+<h2 id="qué-cambió-en-el-harness">Qué cambió en el harness</h2>
+<p>Ninguna regla nueva en el protocolo: si entra una, se busca otra que quitar. Es criterio de quien apunta, para que la persona no tenga que vigilar el registro para que no hable por ella. Familia: <a href="../../ejemplos/lecciones/010-la-reaccion-que-se-apunto-como-decision.html">lección 010</a>.</p></article><nav class="pasos" aria-label="Más en Ejemplos"><a class="ant" href="../../ejemplos/lecciones/006-dos-revisiones-la-misma-accion.html"><span>Anterior</span>006 · Dos revisiones, la misma acción esperando</a><a class="sig" href="../../ejemplos/lecciones/008-la-decision-que-no-llego-a-la-skill.html"><span>Siguiente</span>008 · La decisión que no llegó a la skill</a></nav><p class="acciones"><a class="boton" href="../../ejemplos/index.html">Volver a Ejemplos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/ejemplos/lecciones/007-la-conversacion-que-se-apunto-como-decision.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

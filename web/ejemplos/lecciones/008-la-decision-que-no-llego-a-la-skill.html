@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>008 · La decisión que no llegó a la skill · harness</title>
+<meta name="description" content="Es como un aviso en la puerta de la cocina que dice «a partir de hoy, el café con la cafetera nueva», cuando la cafetera nueva solo está en una de las cocinas. Lo que se quería era que nadie se quedara sin café. Los demás seguían con la de siempre, que también lo cumplía, pero el aviso no lo decía.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../../nucleo/index.html">Núcleo</a></li><li><a href="../../herramientas/index.html">Herramientas</a></li><li><a href="../../especialistas/index.html">Especialistas</a></li><li><a href="../../flujos/index.html">Flujos</a></li><li><a href="../../ejemplos/index.html" aria-current="page">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">008 · La decisión que no llegó a la skill</li></ol></nav>
+
+<article class="doc"><h1>008 · La decisión que no llegó a la skill</h1><ul>
+<li><strong>Cuándo:</strong> cuando una decisión cambia cómo trabaja una skill o qué herramienta usa («se hace con X», «se apunta en la skill Y»), y varios agentes tienen una skill con el mismo nombre.
+</li>
+<li><strong>Qué hacer:</strong> la línea del registro separa el objetivo (lo que decidió la persona y vale para todos) del medio (la herramienta o el cambio de skill de un agente). Si nombra skills, dice de quién son. Si pide una herramienta, dice dónde vive. Así cada agente sabe por la línea si le toca, sin abrir un hilo para preguntarlo. Pieza: el campo «dónde» de <code>equipo.py apunta</code>.
+</li>
+<li><strong>Pruebas:</strong> una línea decía «lecturas siempre con una herramienta concreta, nunca con curl» y «se apunta en las skills» con tres nombres que tenían todos los agentes. Pero esa herramienta solo vivía en la máquina de un agente, y los demás leían con curl. En el hilo se aclaró que el objetivo de la persona era que leer nunca le pidiera permiso; la herramienta era el medio de un agente. Para todos valía curl de solo lectura, nunca con datos. Se apuntó así en una línea nueva.
+</li>
+<li><strong>Seguridad:</strong> baja. Se resolvió en una vuelta del hilo y no hizo daño. Habría sido peor si alguien hubiera cambiado su skill a una herramienta que no tiene.
+</li></ul>
+<h2 id="qué-pasó-en-llano">Qué pasó, en llano</h2>
+<p>Es como un aviso en la puerta de la cocina que dice «a partir de hoy, el café con la cafetera nueva», cuando la cafetera nueva solo está en una de las cocinas. Lo que se quería era que nadie se quedara sin café. Los demás seguían con la de siempre, que también lo cumplía, pero el aviso no lo decía.</p>
+<h2 id="qué-cambió-en-el-harness">Qué cambió en el harness</h2>
+<p>Nada en las herramientas ni en el protocolo: la regla va en el «dónde» de la línea, que ya se escribe siempre. Si vuelve a pasar, se valora que <code>apunta</code> pida el dueño cuando el «dónde» nombre una skill. Familia: <a href="../../ejemplos/lecciones/007-la-conversacion-que-se-apunto-como-decision.html">lección 007</a>; las dos tratan de que la línea diga más o menos de lo que se decidió.</p></article><nav class="pasos" aria-label="Más en Ejemplos"><a class="ant" href="../../ejemplos/lecciones/007-la-conversacion-que-se-apunto-como-decision.html"><span>Anterior</span>007 · La conversación que se apuntó como decisión</a><a class="sig" href="../../ejemplos/lecciones/009-la-firma-que-dependia-de-acordarse.html"><span>Siguiente</span>009 · La firma que dependía de acordarse</a></nav><p class="acciones"><a class="boton" href="../../ejemplos/index.html">Volver a Ejemplos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/ejemplos/lecciones/008-la-decision-que-no-llego-a-la-skill.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

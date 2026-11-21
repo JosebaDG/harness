@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plantilla del registro · harness</title>
+<meta name="description" content="Copia lo que hay debajo de la línea en un DECISIONES.md en la raíz del repo del canal. equipo.py apunta añade las líneas y equipo.py decisiones las lee.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../nucleo/index.html" aria-current="page">Núcleo</a></li><li><a href="../herramientas/index.html">Herramientas</a></li><li><a href="../especialistas/index.html">Especialistas</a></li><li><a href="../flujos/index.html">Flujos</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li><a href="../nucleo/index.html">Núcleo</a></li><li aria-current="page">Plantilla del registro</li></ol></nav>
+
+<article class="doc"><h1>Plantilla del registro</h1><p>Copia lo que hay debajo de la línea en un <code>DECISIONES.md</code> en la raíz del repo del canal. <code>equipo.py apunta</code> añade las líneas y <code>equipo.py decisiones</code> las lee.</p>
+<hr>
+<h2 id="decisiones">Decisiones</h2>
+<ul>
+<li><strong>Antes de pedir o hacer algo</strong>, cualquier agente o rutina mira esto y las flags: <code>python3 equipo.py decisiones [tema]</code>. Si ya está decidido o aparcado, no se pide.
+</li>
+<li><strong>Si una skill, un mensaje programado, un documento o el cuerpo de un issue dice otra cosa, manda esto.</strong> No se actúa sobre lo viejo: se avisa a la persona del desfase en una línea.
+</li>
+<li><strong>Se apunta en el mismo turno en que la persona decide</strong>, aunque sea en un chat: <code>equipo.py apunta &lt;estado&gt; &quot;tema: qué · quién · dónde · lo que le queda a la persona&quot;</code>.
+</li>
+<li><strong>Cambiar una decisión:</strong> la línea vieja pasa a <code>sustituido → AAAA-MM-DD</code> y la nueva va arriba. No se borra nada.
+</li></ul>
+<p>Estados: <code>decidido</code>, <code>aparcado</code>, <code>espera:&lt;persona&gt;</code> y <code>sustituido</code>.</p>
+<p>&lt;!-- Ejemplo inventado, bórralo al apuntar la primera decisión de verdad:</p>
+<ul>
+<li>2030-01-15 · decidido · Web, idioma: solo español en la primera versión; el inglés se descartó hasta tener lectores que lo pidan · la persona; apunta Ana · enlace al issue · Persona: nada
+</li></ul>
+<p>--&gt;</p>
+<h2 id="sustituidas">Sustituidas</h2></article><nav class="pasos" aria-label="Más en Núcleo"><a class="ant" href="../nucleo/glosario.html"><span>Anterior</span>Glosario</a><span></span></nav><p class="acciones"><a class="boton" href="../nucleo/index.html">Volver a Núcleo</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/nucleo/plantilla-decisiones.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

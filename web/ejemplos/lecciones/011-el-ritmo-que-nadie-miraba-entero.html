@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>011 · El ritmo que nadie miraba entero · harness</title>
+<meta name="description" content="Es como una cadena de montaje donde cada puesto funciona, pero uno abre a las nueve y cierra a las nueve y cuarto. Cada puesto dice «hoy he trabajado bien», y las piezas se amontonan delante del que cierra pronto.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../../nucleo/index.html">Núcleo</a></li><li><a href="../../herramientas/index.html">Herramientas</a></li><li><a href="../../especialistas/index.html">Especialistas</a></li><li><a href="../../flujos/index.html">Flujos</a></li><li><a href="../../ejemplos/index.html" aria-current="page">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">011 · El ritmo que nadie miraba entero</li></ol></nav>
+<details class="indice"><summary>En esta página · 3 apartados</summary><ol><li><a href="#qué-pasó-en-llano">Qué pasó, en llano</a></li><li><a href="#qué-cambió-en-el-harness">Qué cambió en el harness</a></li><li><a href="#seguimiento-el-relevo-que-se-perdió">Seguimiento: el relevo que se perdió</a></li></ol></details>
+<article class="doc"><h1>011 · El ritmo que nadie miraba entero</h1><ul>
+<li><strong>Cuándo:</strong> cuando cada agente tiene su propia rutina y se comprueba que cada una se ejecuta, pero nadie mira si juntas hacen avanzar los hilos.
+</li>
+<li><strong>Qué hacer:</strong> medir el flujo y no solo las ejecuciones: cuántas vueltas completas da un hilo por ciclo y dónde se para. Los horarios se diseñan juntos, en el orden de los turnos, y van en la configuración del equipo, no en la memoria de cada rutina. Pieza: <a href="../../nucleo/protocolo.html#ritmo">protocolo, «Ritmo»</a> y la clave <code>ciclo</code> de la configuración de <a href="https://github.com/JosebaDG/harness/blob/main/herramientas/equipo.py"><code>equipo.py</code></a>.
+</li>
+<li><strong>Pruebas:</strong> un agente revisaba una vez al día y los demás varias veces, cada uno a su hora. Un turno que le llegaba después de su revisión esperaba un día entero, y un hilo estuvo parado un día por eso. Todas las rondas salían «bien» en el registro de ejecuciones. Lo detectó la persona, no el sistema.
+</li>
+<li><strong>Seguridad:</strong> baja en riesgo, alta en coste: llamadas gastadas en rondas desacompasadas y días perdidos sin que nadie lo viera.
+</li></ul>
+<h2 id="qué-pasó-en-llano">Qué pasó, en llano</h2>
+<p>Es como una cadena de montaje donde cada puesto funciona, pero uno abre a las nueve y cierra a las nueve y cuarto. Cada puesto dice «hoy he trabajado bien», y las piezas se amontonan delante del que cierra pronto.</p>
+<h2 id="qué-cambió-en-el-harness">Qué cambió en el harness</h2>
+<ul>
+<li><strong>Revisiones escalonadas en el orden del ciclo</strong>, con unos minutos entre una y otra, y el coordinador el último. Una sola espera de como mucho 10 minutos dentro de una orden, salida rápida si no hay nada y nunca bucles.
+</li>
+<li><strong>El coordinador mide en cada cierre</strong> las vueltas completas, dónde se rompen y las esperas usadas, y la persona decide si se ajusta.
+</li></ul>
+<h2 id="seguimiento-el-relevo-que-se-perdió">Seguimiento: el relevo que se perdió</h2>
+<p>Con el ritmo nuevo, un relevo se rompió: un agente terminó su turno unos minutos después de que empezara la revisión del siguiente, y el siguiente no lo vio hasta el ciclo después. El trabajo se retrasó un ciclo, pero no se perdió.</p>
+<ul>
+<li><strong>Causa confirmada:</strong> la ronda del primero no se alargó por el trabajo de código, sino porque sus escrituras esperaron la aprobación de la persona. Y la espera única solo existía en el texto de cada rutina: nada le dijo al segundo que esperase. Se repitió al día siguiente con otra espera de aprobación.
+</li>
+<li><strong>Cambio:</strong> <code>bandeja</code> saca <code>ESPERA ÚNICA</code> cuando un hilo tiene el turno del anterior del ciclo y este no ha escrito desde su hora; la condición la calcula la herramienta, no cada rutina. En la misma revisión entró <code>SIGUES TÚ</code>, para el agente que se queda un turno con un mensaje suyo: son dos líneas distintas porque piden cosas contrarias, esperar o actuar ya.
+</li>
+<li><strong>Límite aceptado:</strong> <code>ESPERA ÚNICA</code> solo recoge lo que llega en 10 minutos o menos. Una aprobación más larga sigue rompiendo el relevo.
+</li></ul></article><nav class="pasos" aria-label="Más en Ejemplos"><a class="ant" href="../../ejemplos/lecciones/010-la-reaccion-que-se-apunto-como-decision.html"><span>Anterior</span>010 · La reacción que se apuntó como decisión</a><a class="sig" href="../../ejemplos/lecciones/012-lo-que-pide-la-persona-va-fuera-de-ciclo.html"><span>Siguiente</span>012 · Lo que pide la persona va fuera de ciclo, no rompe el ritmo</a></nav><p class="acciones"><a class="boton" href="../../ejemplos/index.html">Volver a Ejemplos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/ejemplos/lecciones/011-el-ritmo-que-nadie-miraba-entero.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

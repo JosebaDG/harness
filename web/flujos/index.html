@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flujos · harness</title>
+<meta name="description" content="Flujos de trabajo de principio a fin: qué especialistas hacen falta, en qué orden y qué entrega cada uno. Cada flujo dice si ya se ha probado en un trabajo real o si está sin probar.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../nucleo/index.html">Núcleo</a></li><li><a href="../herramientas/index.html">Herramientas</a></li><li><a href="../especialistas/index.html">Especialistas</a></li><li><a href="../flujos/index.html" aria-current="page">Flujos</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li aria-current="page">Flujos</li></ol></nav>
+<details class="indice"><summary>En esta página · 4 apartados</summary><ol><li><a href="#esqueleto-y-adaptador">Esqueleto y adaptador</a></li><li><a href="#catálogo">Catálogo</a></li><li><a href="#reglas-para-todos-los-flujos">Reglas para todos los flujos</a></li><li><a href="#docs">Flujos</a></li></ol></details>
+<h1>Flujos</h1><p>Flujos de trabajo de principio a fin: qué especialistas hacen falta, en qué orden y qué entrega cada uno. Cada flujo dice si ya se ha probado en un trabajo real o si está sin probar.</p>
+<h2 id="esqueleto-y-adaptador">Esqueleto y adaptador</h2>
+<p>Un flujo tiene dos partes:</p>
+<ul>
+<li><strong>El esqueleto:</strong> los pasos que valen para cualquier proyecto. El encargo, la redacción o construcción, la objeción de fondo, las cifras, lo público, el lector en frío, la última objeción, el empaquetado para la persona y publicar.
+</li>
+<li><strong>El adaptador:</strong> lo que cambia según el tipo de proyecto. Qué es la vista previa que ve la persona y qué prueba automática se hace. Una web tiene un adaptador; una app o un vídeo tendrán otro.
+</li></ul>
+<p>Así un flujo nuevo no empieza de cero: copia el esqueleto y escribe su adaptador.</p>
+<h2 id="catálogo">Catálogo</h2>
+<div class="tabla" tabindex="0" role="region" aria-label="Tabla"><table><thead><tr><th scope="col">Flujo</th><th scope="col">Para qué</th><th scope="col">Estado</th></tr></thead><tbody><tr><td><a href="../flujos/escaparate-web.html">escaparate-web.md</a></td><td>Un cambio de texto o contenido en una web pública, sin tocar el diseño</td><td>Probado una vez. La prueba está en <a href="../ejemplos/primera-prueba-escaparate-web.html">ejemplos/</a></td></tr><tr><td><a href="../flujos/novela-a-video.html">novela-a-video.md</a></td><td>Un piloto de investigación: un tráiler corto de una novela con herramientas abiertas</td><td>Sin probar. Sirve para ver cómo se reparten gorros por ciclos</td></tr></tbody></table></div>
+<h2 id="reglas-para-todos-los-flujos">Reglas para todos los flujos</h2>
+<ol>
+<li><strong>Dos puertas de la persona:</strong> al principio, el encargo con sus palabras, y al final, sí, no o cambios. En medio, nada, salvo que aparezca algo ya publicado que no debe estar: eso se le avisa en el momento, porque despublicar es suyo.
+</li>
+<li><strong>Un commit por paso,</strong> con el gorro en el mensaje: <code>Gorro (quién): qué encontró -&gt; qué cambió</code>. Si no cambia nada, la nota va en el hilo. El rastro queda en <code>git log</code>.
+</li>
+<li><strong>Quien hace una pieza no la evalúa.</strong> Si un solo agente lleva varios gorros, lo dice en el commit y esos gorros quedan provisionales hasta que los repase otro.
+</li>
+<li><strong>Un flujo pasa a «probado» solo con una prueba en <a href="../ejemplos/index.html">ejemplos/</a>:</strong> qué pasó, qué funcionó, qué rozó y cuánto costó.
+</li></ol>
+<p>Los procedimientos que citan algunos pasos (conflictos, consejo, traspaso) y las especialidades, como la web, llegan en otro PR.</p><section class="bloque" aria-labelledby="docs"><h2 id="docs">Flujos · 2</h2><ul class="tarjetas"><li class="tarjeta"><a href="../flujos/escaparate-web.html"><strong>Flujo: cambio en el escaparate web</strong><span>Para qué: cualquier cambio de texto o contenido en una web pública que no toca el diseño ni las animaciones. Estado: probado una vez, con los textos de una versión nueva de la web </span></a></li><li class="tarjeta"><a href="../flujos/novela-a-video.html"><strong>Flujo de ejemplo: de novela a vídeo</strong><span>Para qué: un piloto de investigación. Un tráiler de 30 a 60 segundos de una novela, con permiso del autor por escrito y hecho con herramientas abiertas. Estado: sin probar. Sirve p</span></a></li></ul></section><p class="acciones"><a class="boton secundario" href="https://github.com/JosebaDG/harness/tree/main/flujos">Ver la carpeta en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

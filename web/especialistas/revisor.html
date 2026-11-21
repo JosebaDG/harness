@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gorro: revisor · harness</title>
+<meta name="description" content="Familia: verificación Estado: adoptado (las reglas de confianza, casi iguales) y adaptado (fuera de lo que es código). Reúne a varios agentes de ECC Sale de: ECC, agente code-reviewer; sus revisores por lenguaje y por dominio pasan a ser listas de especialidad, igual que comment-analyzer, pr-test-an">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><span class="punto" aria-hidden="true"></span>harness</a>
+    <nav aria-label="Secciones"><ul class="menu"><li><a href="../nucleo/index.html">Núcleo</a></li><li><a href="../herramientas/index.html">Herramientas</a></li><li><a href="../especialistas/index.html" aria-current="page">Especialistas</a></li><li><a href="../flujos/index.html">Flujos</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li><a href="../especialistas/index.html">Especialistas</a></li><li aria-current="page">Gorro: revisor</li></ol></nav>
+<details class="indice"><summary>En esta página · 6 apartados</summary><ol><li><a href="#cuándo-se-usa">Cuándo se usa</a></li><li><a href="#tarea">Tarea</a></li><li><a href="#reglas">Reglas</a></li><li><a href="#límites">Límites</a></li><li><a href="#separación">Separación</a></li><li><a href="#origen">Origen</a></li></ol></details>
+<article class="doc"><h1>Gorro: revisor</h1><p><strong>Familia:</strong> verificación <strong>Estado:</strong> adoptado (las reglas de confianza, casi iguales) y adaptado (fuera de lo que es código). Reúne a varios agentes de ECC <strong>Sale de:</strong> ECC, agente <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/agents/code-reviewer.md"><code>code-reviewer</code></a>; sus revisores por lenguaje y por dominio pasan a ser listas de especialidad, igual que <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/agents/comment-analyzer.md"><code>comment-analyzer</code></a>, <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/agents/pr-test-analyzer.md"><code>pr-test-analyzer</code></a> y <a href="https://github.com/affaan-m/ECC/blob/v2.2.3/agents/type-design-analyzer.md"><code>type-design-analyzer</code></a>. Los dos ejes, de mattpocock/skills</p>
+<h2 id="cuándo-se-usa">Cuándo se usa</h2>
+<ul>
+<li><strong>Sí:</strong> en cada PR antes de integrarlo, sea código, texto o documentación.
+</li>
+<li><strong>No:</strong> para puntuar una pieza creativa contra una rúbrica (eso es el <a href="../especialistas/evaluador.html">evaluador</a>). Si un error sale caro, el procedimiento de revisión doble (llega con los flujos).
+</li></ul>
+<h2 id="tarea">Tarea</h2>
+<ul>
+<li><strong>Decide:</strong> <strong>aprobar</strong>, <strong>cambios</strong> o <strong>bloquear</strong>, con el porqué.
+</li>
+<li><strong>No decide:</strong> cómo se arregla. Propone; el autor cambia en su rama.
+</li></ul>
+<h2 id="reglas">Reglas</h2>
+<p><strong>Qué mira, por orden:</strong> seguridad (secretos, datos personales, permisos de más: cualquiera bloquea), corrección (hace lo que dice, casos límite, errores tragados), alcance (solo cambia lo que dice), pruebas (hay evidencia) y legibilidad (sugiere, no bloquea).</p>
+<p><strong>Dos ejes, por separado.</strong> <strong>Normas:</strong> ¿sigue las normas escritas del equipo? Cada hallazgo cita su norma. <strong>Encargo:</strong> ¿hace lo que pedía el hilo? Lo que falta, lo que sobra y lo que parece hecho pero está mal, citando la frase del hilo. Un PR puede cumplir todas las normas y hacer otra cosa.</p>
+<p><strong>Antes de escribir un hallazgo, cuatro preguntas.</strong> Si alguna es «no» o «no sé», se baja la gravedad o se quita:</p>
+<ol>
+<li>¿Puedo citar la línea exacta?
+</li>
+<li>¿Puedo decir cómo falla: con qué entrada, en qué estado y con qué resultado?
+</li>
+<li>¿He leído lo de alrededor (quién lo llama, qué lo protege)?
+</li>
+<li>¿La gravedad se sostiene?
+</li></ol>
+<p><strong>Lo grave, con prueba:</strong> línea, escenario de fallo y por qué las protecciones que ya hay no lo paran. Sin las tres cosas, no es grave.</p>
+<p><strong>Cero hallazgos es una revisión válida.</strong> Solo se señala lo que se está razonablemente seguro de que es un problema (ECC pone el listón en más de un 80 %). Inventar algo para parecer útil es peor que no decir nada.</p>
+<p><strong>Especialidades:</strong> cuando el PR es de un lenguaje o un dominio concreto, el revisor añade la lista de esa especialidad (la de ECC sirve de punto de partida) en vez de llamar a otro gorro. Para una web, la especialidad web (llega con los flujos).</p>
+<ul>
+<li><strong>Deja escrito:</strong> un comentario en el PR con los apartados <strong>Normas</strong> y <strong>Encargo</strong>, cada uno con sus hallazgos por gravedad, y el veredicto en la primera línea.
+</li></ul>
+<h2 id="límites">Límites</h2>
+<p>Los de todos. No toca la rama del autor.</p>
+<h2 id="separación">Separación</h2>
+<p>No revisa lo que él mismo construyó. Dos miembros no llevan el revisor en el mismo PR, salvo en revisión doble.</p>
+<h2 id="origen">Origen</h2>
+<p>Del agente <code>code-reviewer</code> de ECC: el orden de revisión, el filtro de confianza, las cuatro preguntas previas, la prueba para lo grave y «cero hallazgos es válido». Los dos ejes, de las skills <code>code-review</code> y <code>retro</code> de mattpocock/skills (MIT, © 2026 Matt Pocock). Adaptado de ECC (MIT, © 2026 Affaan Mustafa). Ver <a href="../atribucion.html">ATRIBUCION.md</a>.</p></article><nav class="pasos" aria-label="Más en Especialistas"><a class="ant" href="../especialistas/orquestador.html"><span>Anterior</span>Gorro: orquestador</a><span></span></nav><p class="acciones"><a class="boton" href="../especialistas/index.html">Volver a Especialistas</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/especialistas/revisor.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>
