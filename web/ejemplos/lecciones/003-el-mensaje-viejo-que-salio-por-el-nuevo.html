@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>003 · El mensaje viejo que salió por el nuevo · harness</title>
+<meta name="description" content="Si las dos órdenes salen a la vez, puede ganar la segunda: se publica lo que había antes en el archivo. Nadie se equivocó al escribir; falló el orden.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="../../marca/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../../fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../estilo.css?v=e1fa3ed1">
+</head>
+<body class="sitio-harness" style="--acento:#f3cf96">
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<div class="reloj" aria-hidden="true"></div>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../../index.html"><svg class="iso" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle cx="20" cy="20" r="13" fill="none" stroke="#f3cf96" stroke-width="1.6" stroke-dasharray="2 3.4"/><circle cx="20" cy="7" r="3" fill="#a2bcff"/><circle cx="33" cy="20" r="3" fill="#47d6cf"/><circle cx="20" cy="33" r="3" fill="#f89dc9"/><circle cx="7" cy="20" r="3" fill="#e6b55d"/><circle cx="20" cy="20" r="3.6" fill="#fff" class="iso-punto"/></svg><span>harness</span></a>
+    <nav aria-label="Secciones"><ul class="menu"><li style="--acento:#a2bcff"><a href="../../nucleo/index.html">Núcleo</a></li><li style="--acento:#47d6cf"><a href="../../herramientas/index.html">Herramientas</a></li><li style="--acento:#f89dc9"><a href="../../especialistas/index.html">Especialistas</a></li><li style="--acento:#e6b55d"><a href="../../flujos/index.html">Flujos</a></li><li style="--acento:#f3cf96"><a href="../../ejemplos/index.html" aria-current="page">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol class="migas-lista"><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">003 · El mensaje viejo que salió por el nuevo</li></ol></nav>
+<details class="indice"><summary>En esta página · 3 apartados</summary><ol><li><a href="#qué-pasó-en-llano">Qué pasó, en llano</a></li><li><a href="#qué-cambió-en-el-harness">Qué cambió en el harness</a></li><li><a href="#cómo-se-comprueba">Cómo se comprueba</a></li></ol></details>
+<article class="doc"><p class="doc-seccion"><span class="num" aria-hidden="true">05</span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.4" class="lleno"/></svg><span>Ejemplos</span></p><h1>003 · El mensaje viejo que salió por el nuevo</h1><ul>
+<li><strong>Cuándo:</strong> cuando un agente escribe su mensaje en un archivo y lo publica con <code>equipo.py escribir</code>, <code>nuevo</code> o <code>cerrar</code>, sobre todo si reutiliza el mismo nombre de archivo de una ronda a otra.
+</li>
+<li><strong>Qué hacer:</strong> escribir el archivo y enviarlo en dos pasos separados, nunca a la vez; un nombre de archivo nuevo cada vez; mirar la línea <code>EMPIEZA:</code> que enseña <code>equipo.py</code> al enviar. Pieza: <a href="https://github.com/JosebaDG/harness/blob/main/herramientas/equipo.py"><code>equipo.py</code></a>, que para si el archivo tiene más de 15 minutos (<code>--viejo</code> lo salta).
+</li>
+<li><strong>Pruebas:</strong> una respuesta salió con el texto del día anterior y se corrigió menos de un minuto después. El agente había lanzado a la vez la orden de escribir el archivo y la de enviarlo, y el envío leyó el archivo antes de que se sobrescribiera. Otro agente publicó dos veces el mismo mensaje, con horas de diferencia.
+</li>
+<li><strong>Seguridad:</strong> media. El primer caso está confirmado y se entiende la causa. El segundo encaja (un archivo viejo que se vuelve a enviar), pero no está confirmado.
+</li></ul>
+<h2 id="qué-pasó-en-llano">Qué pasó, en llano</h2>
+<p>Si las dos órdenes salen a la vez, puede ganar la segunda: se publica lo que había antes en el archivo. Nadie se equivocó al escribir; falló el orden.</p>
+<h2 id="qué-cambió-en-el-harness">Qué cambió en el harness</h2>
+<div class="tabla" tabindex="0" role="region" aria-label="Tabla"><table><thead><tr><th scope="col">Medida</th><th scope="col">Por qué</th></tr></thead><tbody><tr><td>Escribir y enviar en dos pasos</td><td>El envío siempre lee el archivo ya escrito</td></tr><tr><td>Un nombre de archivo nuevo cada vez</td><td>Si algo falla, no queda un mensaje viejo esperando a salir</td></tr><tr><td><code>equipo.py</code> para si el archivo tiene más de 15 minutos</td><td>Es la pieza más barata que no se olvida: una regla en la skill se puede saltar, el script no</td></tr><tr><td><code>equipo.py</code> enseña la primera línea al enviar</td><td>Un vistazo basta para ver si es el mensaje de ahora</td></tr></tbody></table></div>
+<h2 id="cómo-se-comprueba">Cómo se comprueba</h2>
+<p>En las rondas siguientes no debe salir ningún mensaje viejo ni repetido. Si <code>equipo.py</code> para un envío legítimo, se usa <code>--viejo</code> y se apunta, por si hay que subir el límite.</p></article><nav class="pasos" aria-label="Más en Ejemplos"><a class="ant" href="../../ejemplos/lecciones/002-issues-como-foros.html"><span>Anterior</span>002 · Issues como foros, y formación desde los bloqueos reales</a><a class="sig" href="../../ejemplos/lecciones/004-avisar-sin-turno-va-por-el-registro.html"><span>Siguiente</span>004 · Avisar en un hilo sin turno va por el registro</a></nav><p class="acciones"><a class="boton" href="../../ejemplos/index.html">Volver a Ejemplos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/ejemplos/lecciones/003-el-mensaje-viejo-que-salio-por-el-nuevo.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p class="pie-casa"><a href="https://josebadg.github.io/"><svg class="iso" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle cx="20" cy="20" r="13" fill="none" stroke="#f3cf96" stroke-width="1.6" stroke-dasharray="2 3.4"/><circle cx="20" cy="7" r="3" fill="#a2bcff"/><circle cx="33" cy="20" r="3" fill="#47d6cf"/><circle cx="20" cy="33" r="3" fill="#f89dc9"/><circle cx="7" cy="20" r="3" fill="#e6b55d"/><circle cx="20" cy="20" r="3.6" fill="#fff" class="iso-punto"/></svg><span>Parte de The Singularity</span></a></p>
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

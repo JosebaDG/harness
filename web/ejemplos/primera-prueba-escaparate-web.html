@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prueba: primer cambio en el escaparate web con el flujo · harness</title>
+<meta name="description" content="Flujo: escaparate web. Encargo de la persona: probar todo el material del harness con un trabajo real, de la forma más profesional posible, porque la web es el escaparate del equipo, y sacar de ahí los flujos de trabajo. Trabajo de partida: los textos de la versión siguiente de la web del equipo, ya">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="../marca/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../estilo.css?v=e1fa3ed1">
+</head>
+<body class="sitio-harness" style="--acento:#f3cf96">
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<div class="reloj" aria-hidden="true"></div>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><svg class="iso" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle cx="20" cy="20" r="13" fill="none" stroke="#f3cf96" stroke-width="1.6" stroke-dasharray="2 3.4"/><circle cx="20" cy="7" r="3" fill="#a2bcff"/><circle cx="33" cy="20" r="3" fill="#47d6cf"/><circle cx="20" cy="33" r="3" fill="#f89dc9"/><circle cx="7" cy="20" r="3" fill="#e6b55d"/><circle cx="20" cy="20" r="3.6" fill="#fff" class="iso-punto"/></svg><span>harness</span></a>
+    <nav aria-label="Secciones"><ul class="menu"><li style="--acento:#a2bcff"><a href="../nucleo/index.html">Núcleo</a></li><li style="--acento:#47d6cf"><a href="../herramientas/index.html">Herramientas</a></li><li style="--acento:#f89dc9"><a href="../especialistas/index.html">Especialistas</a></li><li style="--acento:#e6b55d"><a href="../flujos/index.html">Flujos</a></li><li style="--acento:#f3cf96"><a href="../ejemplos/index.html" aria-current="page">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol class="migas-lista"><li><a href="../index.html">Inicio</a></li><li><a href="../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">Prueba: primer cambio en el escaparate web con el flujo</li></ol></nav>
+<details class="indice"><summary>En esta página · 5 apartados</summary><ol><li><a href="#rastro-paso-a-paso">Rastro, paso a paso</a></li><li><a href="#qué-funcionó">Qué funcionó</a></li><li><a href="#qué-rozó">Qué rozó</a></li><li><a href="#qué-cambió-en-el-harness">Qué cambió en el harness</a></li><li><a href="#cuánto-costó">Cuánto costó</a></li></ol></details>
+<article class="doc"><p class="doc-seccion"><span class="num" aria-hidden="true">05</span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.4" class="lleno"/></svg><span>Ejemplos</span></p><h1>Prueba: primer cambio en el escaparate web con el flujo</h1><p><strong>Flujo:</strong> <a href="../flujos/escaparate-web.html">escaparate web</a>. <strong>Encargo de la persona:</strong> probar todo el material del harness con un trabajo real, de la forma más profesional posible, porque la web es el escaparate del equipo, y sacar de ahí los flujos de trabajo. <strong>Trabajo de partida:</strong> los textos de la versión siguiente de la web del equipo, ya redactados en un PR con tabla antes → después.</p>
+<h2 id="rastro-paso-a-paso">Rastro, paso a paso</h2>
+<div class="tabla" tabindex="0" role="region" aria-label="Tabla"><table><thead><tr><th scope="col">Paso</th><th scope="col">Gorro</th><th scope="col">Qué encontró</th><th scope="col">Qué cambió</th></tr></thead><tbody><tr><td>0 Encargo</td><td>coordinador</td><td>El PR ya tenía tabla antes → después y fuentes. <code>main</code> iba por delante de la rama</td><td>Se trajo <code>main</code> a la rama</td></tr><tr><td>1 Redacción</td><td>redactor</td><td>—</td><td>Los textos del PR</td></tr><tr><td>2 Cifras</td><td>cartógrafo, en modo cifras (<strong>provisional</strong>)</td><td>Recuentos y fechas, ok con su fuente. <strong>Dos fallos:</strong> «se pueden descargar» no tenía una ruta visible en la web enlazada, y «el código está abierto» exageraba, porque parte del trabajo vive en repos privados. El segundo se repetía en la descripción para buscadores</td><td>«en abierto en GitHub» y «el código de lo publicado», en el cuerpo y en los metadatos</td></tr><tr><td>3 Lo público</td><td>guardián de lo público</td><td><strong>Pasa con avisos.</strong> Dos comentarios del HTML nombraban a la persona: no se ven en la página, pero sí en el código fuente. Sin secretos ni enlaces a repos privados</td><td>Fuera el nombre de los comentarios</td></tr><tr><td>4 Lector en frío</td><td>evaluador (<strong>provisional</strong>)</td><td>Un recuento de repos no se podía comprobar desde fuera, «desde octubre» iba a envejecer y una entradilla le hablaba al equipo y no al visitante</td><td>Fecha con año y entradilla para el visitante</td></tr><tr><td>5 Tono y marca</td><td>guardián de la voz (<strong>provisional</strong>)</td><td>Tres objeciones posibles, ninguna de peso</td><td>Sin cambios, con el porqué en la prueba</td></tr><tr><td>6 Accesibilidad y móvil</td><td>revisor con la especialidad web</td><td>WebKit a 390 y 320 de ancho y Chromium a 1280, en tres páginas de la rama y de la vista previa: axe sin fallos, sin desborde, sin errores de JavaScript ni recursos rotos. <strong>Capturas medidas, no miradas</strong></td><td>Nada que corregir</td></tr><tr><td>7 Objeción</td><td>contrapeso</td><td>Objeciones a varias propuestas de la ronda</td><td>Recogidas en las recomendaciones a la persona</td></tr><tr><td>8 Empaquetado</td><td>jefe de gabinete</td><td>—</td><td>Vista previa regenerada y tarjeta en el tablón con qué revisiones lleva y cuáles faltan</td></tr></tbody></table></div>
+<h2 id="qué-funcionó">Qué funcionó</h2>
+<ul>
+<li><strong>El orden cifras → público → frío</strong> encontró dos afirmaciones falsas que habían pasado la redacción, y una de ellas repetida en los metadatos, que ninguna revisión visual habría visto.
+</li>
+<li><strong>Un commit por gorro</strong> dejó el rastro en <code>git log</code>: no hizo falta otro documento para saber quién cambió qué y por qué.
+</li>
+<li><strong>El paso 6 ya era un script:</strong> se pasó dos veces, sobre la rama y sobre la vista previa, sin gastar atención.
+</li></ul>
+<h2 id="qué-rozó">Qué rozó</h2>
+<ul>
+<li><strong>El cuello de botella fue el turno, no el trabajo.</strong> El hilo de los textos se quedó días sin respuesta mientras los mismos agentes contestaban en minutos otra ronda del canal. Una ronda en el canal arranca; un reparto en otro hilo, no.
+</li>
+<li><strong>Separación incumplida:</strong> un solo agente llevó redacción, cifras, frío y tono, y por eso tres gorros quedaron provisionales. Cuatro agentes no dan para separar ocho gorros en una tarde sin esperar turnos.
+</li>
+<li><strong>El catálogo estaba hecho para vídeo y código:</strong> para un texto público faltaban gorros (redactor y guardián de la voz; el verificador de cifras acabó siendo un modo del cartógrafo).
+</li>
+<li><strong>Nadie miró las capturas.</strong> Se midió todo, pero la imagen solo la vio la persona.
+</li></ul>
+<h2 id="qué-cambió-en-el-harness">Qué cambió en el harness</h2>
+<ul>
+<li>El flujo se partió en <strong>esqueleto y adaptador</strong>, para no reescribirlo en cada tipo de proyecto.
+</li>
+<li>La <strong>objeción de fondo</strong> pasó al principio (1b), y al final solo queda una pasada rápida.
+</li>
+<li>Las <strong>afirmaciones vivas</strong> entraron como regla del paso 2.
+</li>
+<li>El paso 3 avisa a la persona <strong>en el momento</strong> si encuentra algo ya publicado que no debe estar.
+</li>
+<li>Los gorros nuevos quedan pendientes de ficha, y hasta entonces su paso es provisional.
+</li></ul>
+<h2 id="cuánto-costó">Cuánto costó</h2>
+<p>Una tarde de un agente y unas 95 llamadas a herramientas. Más de la mitad fue leer (hilos, registro, catálogo) y localizar fuentes, y los pasos 2 a 6 una cuarta parte. Los turnos del resto del equipo no entran en esa cuenta.</p></article><nav class="pasos" aria-label="Más en Ejemplos"><a class="ant" href="../ejemplos/lecciones/013-una-sola-fuente-de-datos.html"><span>Anterior</span>013 · Una sola fuente de datos y un día sin aviso</a><span></span></nav><p class="acciones"><a class="boton" href="../ejemplos/index.html">Volver a Ejemplos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/ejemplos/primera-prueba-escaparate-web.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p class="pie-casa"><a href="https://josebadg.github.io/"><svg class="iso" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle cx="20" cy="20" r="13" fill="none" stroke="#f3cf96" stroke-width="1.6" stroke-dasharray="2 3.4"/><circle cx="20" cy="7" r="3" fill="#a2bcff"/><circle cx="33" cy="20" r="3" fill="#47d6cf"/><circle cx="20" cy="33" r="3" fill="#f89dc9"/><circle cx="7" cy="20" r="3" fill="#e6b55d"/><circle cx="20" cy="20" r="3.6" fill="#fff" class="iso-punto"/></svg><span>Parte de The Singularity</span></a></p>
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

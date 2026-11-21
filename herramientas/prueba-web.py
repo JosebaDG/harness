@@ -15,7 +15,12 @@ Dependencias: playwright para Python con webkit y chromium
 (pip install playwright && playwright install --with-deps webkit chromium) y axe-core (npm i axe-core).
 Mide WebKit 390x844 y 320x568 y Chromium 1280x800 en cada página.
 Sale con código 1 si algo falla: un fallo de axe (WCAG 2.2 AA), desborde horizontal, error de JS,
-un recurso propio con error 400 o más, o un bloque de --selector más alto que la pantalla.
+un recurso propio con error 400 o más, texto tapado por otro elemento (por ejemplo, un número de lista
+encima de una palabra), o un bloque de --selector más alto que la pantalla.
+
+Texto tapado: recorre la página pantalla a pantalla y, en tres puntos de cada línea de texto visible,
+pregunta qué elemento queda encima. Si es otro (ni el del texto, ni uno de dentro, ni uno que lo
+contiene), lo cuenta como solape. Salta el texto que no se ve (un details cerrado, visibility: hidden). No cuenta lo que tapa una cabecera fija o pegajosa al bajar.
 Sale con código 2 si no puede hacer la prueba (falta axe, playwright o la raíz).
 """
 import argparse, functools, http.server, json, sys, threading
@@ -63,6 +68,40 @@ else:
 
 MIDE_TEXTO = ("sel => Math.max(0, ...[...document.querySelectorAll(sel)]"
               ".map(e => e.getBoundingClientRect().height))")
+TAPADO = r"""() => {
+  const fijo = (e) => { for (; e && e !== document.body; e = e.parentElement) {
+      const p = getComputedStyle(e).position; if (p === "fixed" || p === "sticky") return e; } return null; };
+  const quien = (e) => e.tagName.toLowerCase() + (e.className && typeof e.className === "string" ? "." + e.className.trim().split(/\s+/).join(".") : "");
+  const vistos = new Set(), salida = [], H = innerHeight, W = innerWidth, alto = document.documentElement.scrollHeight;
+  for (let y = 0; y < alto; y += Math.max(200, Math.floor(H * 0.8))) {
+    scrollTo(0, y);
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) {
+      const el = n.parentElement;
+      if (!n.textContent.trim() || !el || el.closest("svg, script, style, noscript, [aria-hidden=true] svg")) continue;
+      const cerrado = el.closest("details:not([open])");
+      if (cerrado && !el.closest("summary")) continue;
+      if (el.checkVisibility && !el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) continue;
+      const cs = getComputedStyle(el);
+      if (cs.visibility === "hidden" || +cs.opacity === 0) continue;
+      const rg = document.createRange(); rg.selectNodeContents(n);
+      for (const r of rg.getClientRects()) {
+        if (r.width < 4 || r.height < 4 || r.bottom <= 0 || r.top >= H) continue;
+        const cy = r.top + r.height / 2;
+        for (const cx of [r.left + 2, r.left + r.width / 2, r.right - 2]) {
+          if (cx < 0 || cx >= W || cy < 0 || cy >= H) continue;
+          const h = document.elementFromPoint(cx, cy);
+          if (!h || h === el || el.contains(h) || h.contains(el)) continue;
+          const f = fijo(h); if (f && !f.contains(el)) continue;
+          const clave = quien(el) + "|" + quien(h) + "|" + n.textContent.trim().slice(0, 30);
+          if (!vistos.has(clave)) { vistos.add(clave); salida.push("«" + n.textContent.trim().slice(0, 30) + "» (" + quien(el) + ") bajo " + quien(h)); }
+        }
+      }
+    }
+  }
+  scrollTo(0, 0);
+  return salida.slice(0, 10);
+}"""
 res, fallos = [], 0
 with sync_playwright() as p:
     for motor, ancho, alto in (("webkit", 390, 844), ("webkit", 320, 568), ("chromium", 1280, 800)):
@@ -81,11 +120,12 @@ with sync_playwright() as p:
                             ".then(r=>r.violations.map(v=>v.id+':'+v.nodes.length))")
             desb = pg.evaluate("document.documentElement.scrollWidth>innerWidth+1")
             texto = pg.evaluate(MIDE_TEXTO, a.selector) if a.selector else 0
+            tapado = pg.evaluate(TAPADO)
             nombre = u.strip("/").replace("/", "_") or "portada"
             pg.screenshot(path=str(CAPS / ("%s_%d_%s.png" % (motor, ancho, nombre))))
             r = dict(motor=motor, ancho=ancho, alto=alto, url=u, axe=v, desborda=desb, errores_js=errs,
-                     recursos_con_error=malos, texto_max_px=round(texto))
-            r["falla"] = bool(v or desb or errs or malos or texto > alto)
+                     recursos_con_error=malos, texto_tapado=tapado, texto_max_px=round(texto))
+            r["falla"] = bool(v or desb or errs or malos or tapado or texto > alto)
             fallos += r["falla"]
             res.append(r)
             pg.close()

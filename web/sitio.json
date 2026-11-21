@@ -1,0 +1,24 @@
+{
+  "repo": "JosebaDG/harness",
+  "titulo": "harness",
+  "variante": "harness",
+  "licencia": "Licencia MIT",
+  "portada": "README.md",
+  "clonar": true,
+  "acciones": [
+    {"texto": "Empieza por el núcleo", "href": "nucleo/index.html", "principal": true},
+    {"texto": "Requisitos", "href": "#requisitos"}
+  ],
+  "titulo_secciones": "Qué hay dentro",
+  "portada_apartados": ["Para quién", "Requisitos"],
+  "secciones": [
+    {"dir": "nucleo", "origen": "nucleo", "nombre": "Núcleo", "orden": ["protocolo.md", "glosario.md", "plantilla-decisiones.md"]},
+    {"dir": "herramientas", "origen": "herramientas", "nombre": "Herramientas", "unidad": "herramientas"},
+    {"dir": "especialistas", "origen": "especialistas", "nombre": "Especialistas", "unidad": "fichas", "unidad1": "ficha", "titulo_lista": "Fichas", "orden": ["plantilla.md"]},
+    {"dir": "flujos", "origen": "flujos", "nombre": "Flujos", "unidad": "flujos", "unidad1": "flujo", "titulo_lista": "Flujos"},
+    {"dir": "ejemplos", "origen": "ejemplos", "nombre": "Ejemplos", "unidad": "ejemplos y lecciones", "titulo_lista": "Pruebas y lecciones", "grupos": {"lecciones": "Lecciones"}}
+  ],
+  "paginas_sueltas": [
+    {"origen": "ATRIBUCION.md", "html": "atribucion.html"}
+  ]
+}

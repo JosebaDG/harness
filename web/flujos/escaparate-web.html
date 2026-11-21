@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flujo: cambio en el escaparate web · harness</title>
+<meta name="description" content="Para qué: cualquier cambio de texto o contenido en una web pública que no toca el diseño ni las animaciones. Estado: probado una vez, con los textos de una versión nueva de la web del propio equipo. La prueba está en ejemplos/primera-prueba-escaparate-web.md.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="../marca/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../estilo.css?v=e1fa3ed1">
+</head>
+<body class="sitio-harness" style="--acento:#e6b55d">
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<div class="reloj" aria-hidden="true"></div>
+<header class="cabecera">
+  <div class="marco cabecera-fila">
+    <a class="marca" href="../index.html"><svg class="iso" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle cx="20" cy="20" r="13" fill="none" stroke="#f3cf96" stroke-width="1.6" stroke-dasharray="2 3.4"/><circle cx="20" cy="7" r="3" fill="#a2bcff"/><circle cx="33" cy="20" r="3" fill="#47d6cf"/><circle cx="20" cy="33" r="3" fill="#f89dc9"/><circle cx="7" cy="20" r="3" fill="#e6b55d"/><circle cx="20" cy="20" r="3.6" fill="#fff" class="iso-punto"/></svg><span>harness</span></a>
+    <nav aria-label="Secciones"><ul class="menu"><li style="--acento:#a2bcff"><a href="../nucleo/index.html">Núcleo</a></li><li style="--acento:#47d6cf"><a href="../herramientas/index.html">Herramientas</a></li><li style="--acento:#f89dc9"><a href="../especialistas/index.html">Especialistas</a></li><li style="--acento:#e6b55d"><a href="../flujos/index.html" aria-current="page">Flujos</a></li><li style="--acento:#f3cf96"><a href="../ejemplos/index.html">Ejemplos</a></li></ul></nav>
+  </div>
+</header>
+<main id="contenido" class="marco">
+<nav class="migas" aria-label="Estás en"><ol class="migas-lista"><li><a href="../index.html">Inicio</a></li><li><a href="../flujos/index.html">Flujos</a></li><li aria-current="page">Flujo: cambio en el escaparate web</li></ol></nav>
+<details class="indice"><summary>En esta página · 4 apartados</summary><ol><li><a href="#pasos">Pasos</a></li><li><a href="#reglas-del-flujo">Reglas del flujo</a></li><li><a href="#qué-se-automatiza-y-qué-no">Qué se automatiza y qué no</a></li><li><a href="#coste-de-referencia">Coste de referencia</a></li></ol></details>
+<article class="doc"><p class="doc-seccion"><span class="num" aria-hidden="true">04</span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><path d="M7 6c6 0 6 6 10 6M7 18c6 0 6-6 10-6"/></svg><span>Flujos</span></p><h1>Flujo: cambio en el escaparate web</h1><p><strong>Para qué:</strong> cualquier cambio de texto o contenido en una web pública que no toca el diseño ni las animaciones. <strong>Estado:</strong> probado una vez, con los textos de una versión nueva de la web del propio equipo. La prueba está en <a href="../ejemplos/primera-prueba-escaparate-web.html">ejemplos/primera-prueba-escaparate-web.md</a>.</p>
+<p><strong>Esqueleto y adaptador:</strong> los pasos 0 a 5 y 7 a 9 son el esqueleto común (ver <a href="../flujos/index.html">README</a>). Esta página es el <strong>adaptador web</strong>: la vista previa es una copia de la rama publicada bajo <code>/preview/prN/</code> y el paso 6 es la prueba de accesibilidad y móvil de <a href="https://github.com/JosebaDG/harness/blob/main/herramientas/prueba-web.py">herramientas/prueba-web.py</a>.</p>
+<p><strong>Puertas de la persona:</strong> dos. Al principio, el encargo con sus palabras, y al final, sí, no o cambios. Nada en medio, <strong>salvo</strong> cuando el paso 3 encuentra en <code>main</code> algo ya publicado que no debe estar: se avisa a la persona en ese momento, porque despublicar es suyo y esperar a la puerta final lo deja días a la vista.</p>
+<h2 id="pasos">Pasos</h2>
+<div class="tabla" tabindex="0" role="region" aria-label="Tabla"><table><thead><tr><th scope="col">#</th><th scope="col">Paso</th><th scope="col">Especialista</th><th scope="col">Entra</th><th scope="col">Sale</th><th scope="col">Automático</th></tr></thead><tbody><tr><td>0</td><td>Encargo</td><td><a href="../especialistas/coordinador.html">coordinador</a></td><td>Palabras de la persona</td><td>Línea en el registro, rama e hilo con turnos</td><td>No</td></tr><tr><td>1</td><td>Redacción</td><td>redactor de lo público (sin ficha todavía)</td><td>Encargo y material</td><td>PR con tabla antes → después y la fuente de cada cifra</td><td>No</td></tr><tr><td>1b</td><td>Objeción de fondo</td><td><a href="../especialistas/contrapeso.html">contrapeso</a></td><td>Borrador y encargo</td><td>La objeción más fuerte («esto no debería estar», «el encargo pide otra cosa») o nada</td><td>No</td></tr><tr><td>2</td><td>Cifras y hechos</td><td><a href="../especialistas/cartografo.html">cartógrafo</a>, en modo cifras</td><td>PR</td><td>ok, corregir o quitar por cifra, con fuente y fecha. Marca las afirmaciones vivas</td><td>En parte: recuentos con una consulta fija</td></tr><tr><td>3</td><td>Lo público</td><td><a href="../especialistas/guardian-de-lo-publico.html">guardián de lo público</a></td><td>PR</td><td>pasa, pasa con avisos o no pasa (vuelve al paso 1)</td><td>En parte: la Action de lo público</td></tr><tr><td>4</td><td>Lector en frío</td><td><a href="../especialistas/evaluador.html">evaluador</a></td><td>Solo la vista previa</td><td>Frases a cambiar</td><td>No</td></tr><tr><td>5</td><td>Tono y marca</td><td>guardián de la voz (sin ficha todavía)</td><td>PR</td><td>Objeciones o «sin cambios»</td><td>No</td></tr><tr><td>6</td><td>Accesibilidad y móvil</td><td><a href="../especialistas/revisor.html">revisor</a> con la especialidad web</td><td>Rama y vista previa</td><td>Tabla motor × ancho × página. Sale con código 1 si algo falla</td><td>Sí: <a href="https://github.com/JosebaDG/harness/blob/main/herramientas/prueba-web.py">prueba-web.py</a></td></tr><tr><td>7</td><td>Última objeción</td><td>contrapeso</td><td>Paquete de decisión</td><td>Pasada rápida: objeción o nada</td><td>No</td></tr><tr><td>8</td><td>Empaquetado</td><td><a href="../especialistas/jefe-de-gabinete.html">jefe de gabinete</a></td><td>Rastro de los pasos 0 a 7</td><td>Vista previa, tarjeta en el tablón y mensaje a la persona</td><td>En parte: copiar la rama a <code>/preview/prN/</code></td></tr><tr><td>—</td><td><strong>Puerta: la persona</strong></td><td>—</td><td>La vista previa, en su móvil</td><td>sí, no o cambios</td><td>—</td></tr><tr><td>9</td><td>Publicar y limpiar</td><td>coordinador</td><td>El sí de la persona</td><td>Fusión, quitar la vista previa y la tarjeta del tablón</td><td>En parte</td></tr></tbody></table></div>
+<p>Los dos gorros sin ficha salieron de la primera prueba. Hasta que tengan ficha, el paso que llevan queda provisional.</p>
+<h2 id="reglas-del-flujo">Reglas del flujo</h2>
+<ul>
+<li><strong>La objeción de fondo va pronto (1b):</strong> si aparece al final, se tira el trabajo de los pasos 2 a 6. En el 7 solo queda una pasada rápida.
+</li>
+<li><strong>Orden fijo de 2 a 4:</strong> primero lo que no es verdad, luego lo que no debe salir y luego lo que no se entiende. Corregir el estilo de una frase que después se quita es trabajo tirado.
+</li>
+<li><strong>Afirmaciones vivas:</strong> lo que se dice de algo automático («cada día», «se actualizan solos», «más de cien») puede dejar de ser verdad sin que nadie lo toque. El paso 2 las marca, y cada una se reescribe con fecha o entra en una comprobación sin agente. Pasó de verdad: una web decía que sus datos se actualizaban solos cada día cuando la fuente llevaba semanas parada.
+</li>
+<li><strong>Cada paso es un commit</strong> con el gorro en el mensaje: <code>Gorro (quién): qué encontró -&gt; qué cambió</code>. Si no cambia nada, la nota va en el hilo.
+</li>
+<li><strong>Separación:</strong> quien redacta (1) no lleva el 2, el 4 ni el 5. Quien lleva el 3 no lleva el 4: si no hay nadie más, el 4 se hace antes de abrir el PR, mirando solo la vista previa.
+</li>
+<li><strong>Turnos:</strong> los pasos que lleva otro agente van por el hilo del canal. Un turno en otro repo deja una línea en el canal, porque las revisiones de los agentes solo miran el canal.
+</li>
+<li><strong>Vista previa:</strong> se regenera tras cada cambio de la rama. Solo cambian las rutas, y se añaden <code>noindex</code> y un enlace para volver.
+</li>
+<li><strong>Capturas:</strong> se dice siempre si se han mirado o solo medido.
+</li></ul>
+<h2 id="qué-se-automatiza-y-qué-no">Qué se automatiza y qué no</h2>
+<ul>
+<li><strong>Ya, paso 6:</strong> <a href="https://github.com/JosebaDG/harness/blob/main/herramientas/prueba-web.py">prueba-web.py</a>. Se pasa sobre la rama y sobre la vista previa (<code>prefijo</code> = <code>/preview/prN</code>). Dependencias y opciones, en su cabecera.
+</li>
+<li><strong>Ya, cifras con una consulta fija:</strong> cada recuento que sale en la web (PR fusionados, registros de datos) se hace siempre con la misma consulta, escrita en el flujo de cada proyecto, y se anota con su fecha. Así dos personas que cuentan llegan a la misma cifra.
+</li>
+<li><strong>Ya, paso 3 en parte:</strong> la Action de lo público, en cada PR.
+</li>
+<li><strong>Siguiente, sin agente ni gasto:</strong> una Action en la web que en cada PR pase el paso 6, compruebe las afirmaciones vivas y deje el resultado como comentario. Dar de alta una Action nueva es un servicio nuevo, y eso lo decide la persona.
+</li>
+<li><strong>Nunca:</strong> las dos puertas de la persona y mirar las capturas con ojos.
+</li></ul>
+<h2 id="coste-de-referencia">Coste de referencia</h2>
+<p>En la primera prueba, una tarde de un agente y unas 95 llamadas a herramientas, más una ronda de revisiones del equipo. Más de la mitad se fue en leer y localizar fuentes, y los pasos 2 a 6 en una cuarta parte. Lo caro no es revisar: es encontrar dónde está cada cosa. Por eso un flujo nuevo empieza por un inventario de fuentes.</p></article><nav class="pasos" aria-label="Más en Flujos"><span></span><a class="sig" href="../flujos/novela-a-video.html"><span>Siguiente</span>Flujo de ejemplo: de novela a vídeo</a></nav><p class="acciones"><a class="boton" href="../flujos/index.html">Volver a Flujos</a> <a class="boton secundario" href="https://github.com/JosebaDG/harness/blob/main/flujos/escaparate-web.md">Ver el archivo en GitHub</a></p>
+</main>
+<footer class="pie">
+  <div class="marco pie-fila">
+    
+    <p class="pie-casa"><a href="https://josebadg.github.io/"><svg class="iso" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle cx="20" cy="20" r="13" fill="none" stroke="#f3cf96" stroke-width="1.6" stroke-dasharray="2 3.4"/><circle cx="20" cy="7" r="3" fill="#a2bcff"/><circle cx="33" cy="20" r="3" fill="#47d6cf"/><circle cx="20" cy="33" r="3" fill="#f89dc9"/><circle cx="7" cy="20" r="3" fill="#e6b55d"/><circle cx="20" cy="20" r="3.6" fill="#fff" class="iso-punto"/></svg><span>Parte de The Singularity</span></a></p>
+    <p>Licencia MIT · <a href="https://github.com/JosebaDG/harness">Código y documentos en GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>
