@@ -1,8 +1,11 @@
 # Revisa que cada commit de un PR lleve el autor acordado para el repo.
 #
-# El autor acordado sale de la variable del repo AUTOR_COMMITS (Settings >
-# Secrets and variables > Actions > Variables), nunca de este archivo: así la
-# plantilla sirve a cualquier equipo. Vale un correo o varios, separados por
+# El autor acordado sale de AUTOR_COMMITS (Settings > Secrets and variables >
+# Actions), nunca de este archivo: así la plantilla sirve a cualquier equipo.
+# Con un correo público (el noreply de GitHub) basta una variable. Con un
+# correo privado, guárdalo como secreto con el mismo nombre: GitHub enseña el
+# bloque env de cada paso en el registro de la Action y solo tapa los
+# secretos, no las variables. Si existen los dos, manda el secreto. Vale un correo o varios, separados por
 # comas o espacios. Se compara solo el correo del autor, sin mayúsculas: el
 # nombre puede variar y el que hace el commit (committer) lo pone GitHub al
 # fusionar o al actualizar la rama desde la web.
@@ -35,7 +38,7 @@ jobs:
       - name: Comprobar el autor de cada commit
         shell: bash
         env:
-          AUTOR_COMMITS: ${{ vars.AUTOR_COMMITS }}
+          AUTOR_COMMITS: ${{ secrets.AUTOR_COMMITS || vars.AUTOR_COMMITS }}
           EVENTO: ${{ github.event_name }}
           RAMA_BASE: ${{ github.base_ref }}
           CABEZA_PR: ${{ github.event.pull_request.head.sha }}
@@ -45,8 +48,8 @@ jobs:
 
           acordados=$(printf '%s' "${AUTOR_COMMITS:-}" | tr ',' ' ' | tr '[:upper:]' '[:lower:]')
           if [ -z "${acordados// /}" ]; then
-            echo "::warning::Falta la variable del repo AUTOR_COMMITS: no compruebo el autor de los commits."
-            echo "Sin comprobar: falta la variable del repo AUTOR_COMMITS." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Falta AUTOR_COMMITS (variable o secreto del repo): no compruebo el autor de los commits."
+            echo "Sin comprobar: falta AUTOR_COMMITS (variable o secreto del repo)." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
