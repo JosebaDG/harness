@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="../../marca/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../../fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../../estilo.css">
+<link rel="stylesheet" href="../../estilo.css?v=e1fa3ed1">
 </head>
 <body class="sitio-harness" style="--acento:#f3cf96">
 <a class="saltar" href="#contenido">Ir al contenido</a>
@@ -21,9 +21,9 @@
   </div>
 </header>
 <main id="contenido" class="marco">
-<nav class="migas" aria-label="Estás en"><ol><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">004 · Avisar en un hilo sin turno va por el registro</li></ol></nav>
+<nav class="migas" aria-label="Estás en"><ol class="migas-lista"><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">004 · Avisar en un hilo sin turno va por el registro</li></ol></nav>
 
-<article class="doc"><p class="doc-seccion"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.4" class="lleno"/></svg><span>Ejemplos</span></p><h1>004 · Avisar en un hilo sin turno va por el registro</h1><ul>
+<article class="doc"><p class="doc-seccion"><span class="num" aria-hidden="true">05</span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.4" class="lleno"/></svg><span>Ejemplos</span></p><h1>004 · Avisar en un hilo sin turno va por el registro</h1><ul>
 <li><strong>Cuándo:</strong> cuando hay que contar al equipo una decisión de la persona, el hilo del tema tiene el turno de otro agente y <code>equipo.py escribir</code> contesta <code>NO TE TOCA</code>.
 </li>
 <li><strong>Qué hacer:</strong> no forzar el turno ni buscar otra vía (la API a mano, otro hilo). Se apunta en el registro con <code>equipo.py apunta</code>, y en la siguiente revisión de cada agente <code>bandeja</code> le avisa con <code>REGISTRO CAMBIADO</code>. Pieza: <a href="../../nucleo/protocolo.html#el-registro-si-no-está-en-el-repo-no-existe">protocolo, «El registro»</a>.

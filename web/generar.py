@@ -12,7 +12,7 @@ Markdown (código, Actions, licencia) van a GitHub.
 
 Solo usa la biblioteca estándar de Python 3.
 """
-import html, json, re, sys
+import hashlib, html, json, math, re, sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -22,6 +22,9 @@ REPO = CFG["repo"]
 BLOB = "https://github.com/%s/blob/main/" % REPO
 TREE = "https://github.com/%s/tree/main/" % REPO
 VARIANTE = CFG.get("variante", "harness")
+# La versión de la hoja de estilos y del script va en su dirección: una página guardada en la caché del
+# navegador sigue con su hoja de entonces y no mezcla una página vieja con un estilo nuevo.
+VERSION = hashlib.sha1(b"".join((WEB / n).read_bytes() for n in ("estilo.css", "portada.js") if (WEB / n).exists())).hexdigest()[:8]
 CASA = CFG.get("casa", {"nombre": "The Singularity", "url": "https://josebadg.github.io/"})
 
 
@@ -69,45 +72,157 @@ def isotipo():
     return '<svg class="iso" viewBox="0 0 40 40" aria-hidden="true" focusable="false">%s</svg>' % dentro
 
 
+# ---------- La escena viva de la portada ----------
+# El fotograma quieto sale de aquí con la misma geometría que escena.js usa en t=0, para que la página
+# se vea bien sin JavaScript y con «reducir movimiento». escena.js anima los mismos elementos.
+
+TAU = 2 * math.pi
+R0, T0 = 0.35, 0.42          # harness: giro inicial y relevo en vuelo del primer agente al segundo
+TW0 = 5.95                   # wiki: el punto acaba de llegar al séptimo libro
+
+
+def _f(n):
+    v = round(n * 10) / 10
+    return ("%d" % v) if v == int(v) else ("%.1f" % v)
+
+
+def _suave(x):
+    x = min(1, max(0, x))
+    return x * x * (3 - 2 * x)
+
+
+def escena_harness(colores):
+    C = (180, 150)
+    s, rot, flujo, golpe = 0.0, R0, 0.0, 0.0
+    k, p = int(math.floor(T0)), T0 - math.floor(T0)
+    viaje = _suave(p / 0.55)
+    activo = k % 4
+
+    def pozo(u):
+        rx = 26 + u * 150
+        return rx, rx * 0.3, C[1] - 44 * (u ** 0.8)
+
+    anillos = []
+    for i in range(7):
+        u = ((i + flujo) / 7) % 1
+        rx, ry, cy = pozo(u)
+        anillos.append('<ellipse class="anillo" cx="180" cy="%s" rx="%s" ry="%s" stroke-opacity="%.3f"/>'
+                       % (_f(cy), _f(rx), _f(ry), 0.55 * math.sin(math.pi * u)))
+    radios = []
+    for i in range(12):
+        fi = i / 12 * TAU + rot * 0.25
+        d = ""
+        for j in range(9):
+            u = 0.06 + j / 8 * 0.94
+            rx, ry, cy = pozo(u)
+            d += ("L" if j else "M") + _f(C[0] + rx * math.cos(fi)) + " " + _f(cy + ry * math.sin(fi))
+        radios.append('<path class="radio" d="%s"/>' % d)
+
+    ox, oy, orx, ory = 180, 124, 122, 34
+    en = lambda th: (ox + orx * math.cos(th), oy + ory * math.sin(th), math.sin(th))
+    detras, delante, pos = [], [], []
+    for i in range(4):
+        x, y, z = en(rot + i * TAU / 4)
+        pos.append((x, y))
+        esc = 0.72 + 0.4 * (z + 1) / 2
+        on = i == activo
+        g = ('<g class="agente" data-color="%s" opacity="%.3f">'
+             '<circle class="aura" cx="%s" cy="%s" r="%s" fill="%s" fill-opacity="%s"/>'
+             '<circle class="llamada" cx="%s" cy="%s" r="%s" stroke="%s" stroke-opacity="0"/>'
+             '<circle class="nucleo" cx="%s" cy="%s" r="%s" fill="%s"/></g>'
+             % (colores[i], 0.55 + 0.45 * (z + 1) / 2,
+                _f(x), _f(y), _f(9 * esc * (2.6 if on else 1.7)), colores[i], "0.3" if on else "0.12",
+                _f(x), _f(y), _f(9 * esc), colores[i],
+                _f(x), _f(y), _f(9 * esc * (1.18 if on else 1)), colores[i]))
+        (delante if z > 0 else detras).append(g)
+
+    th0 = rot + k * TAU / 4
+    th = th0 + viaje * TAU / 4
+    d = ""
+    a0 = max(th0, th - 0.95)
+    for j in range(11):
+        x, y, _ = en(a0 + j / 10 * (th - a0))
+        d += ("L" if j else "M") + _f(x) + " " + _f(y)
+    hx, hy, _ = en(th)
+    pa = pos[activo]
+    defs = ('<defs><radialGradient id="e-halo"><stop offset="0" stop-color="#f3cf96" stop-opacity=".55"/>'
+            '<stop offset="1" stop-color="#f3cf96" stop-opacity="0"/></radialGradient>'
+            '<linearGradient id="e-suelo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3cf96" stop-opacity=".08"/>'
+            '<stop offset="1" stop-color="#f3cf96" stop-opacity="0"/></linearGradient></defs>')
+    return (defs
+            + '<ellipse class="suelo" cx="180" cy="132" rx="176" ry="80" fill="url(#e-suelo)"/>'
+            + '<g class="pozo">' + "".join(radios) + "".join(anillos) + '</g>'
+            + '<ellipse class="via" cx="%s" cy="%s" rx="%s" ry="%s"/>' % (ox, oy, orx, ory)
+            + '<g class="detras">' + "".join(detras) + '</g>'
+            + '<line class="lazo" x1="%s" y1="%s" x2="180" y2="150" stroke="%s" stroke-opacity="0.45"/>' % (_f(pa[0]), _f(pa[1]), colores[activo])
+            + '<circle class="halo" cx="180" cy="150" r="40" fill="url(#e-halo)"/>'
+            + '<circle class="onda" cx="180" cy="150" r="11" stroke-opacity="0"/>'
+            + '<circle class="punto" cx="180" cy="150" r="11"/>'
+            + '<g class="delante">' + "".join(delante) + '</g>'
+            + '<path class="estela" d="%s" stroke-opacity="0.85"/>' % d
+            + '<circle class="cabeza" cx="%s" cy="%s" r="4.5"/>' % (_f(hx), _f(hy)))
+
+
+def escena_wiki(colores):
+    # Libros: x, ancho, alto, color. El último es el hueco que se llena.
+    xs, libros, x = [], [], 34
+    alturas = [92, 118, 80, 104, 126, 88, 112, 98, 120, 108]
+    anchos = [24, 20, 28, 22, 18, 26, 22, 20, 24, 24]
+    for i, (h, w) in enumerate(zip(alturas, anchos)):
+        libros.append((x, w, h, colores[i % len(colores)]))
+        x += w + 6
+    n = len(libros) - 1
+    estante = 246
+    t = TW0
+    j, q = int(t), t - int(t)
+    qe = _suave(q)
+    cen = lambda i: libros[i][0] + libros[i][1] / 2
+    cima = lambda i: estante - libros[i][2]
+    px = cen(j) + (cen(j + 1) - cen(j)) * qe
+    py = (cima(j) - 18) + ((cima(j + 1) - 18) - (cima(j) - 18)) * qe - 30 * math.sin(math.pi * q)
+    out = []
+    for i, (bx, w, h, c) in enumerate(libros):
+        alza, op = 0, (0.88 if i % 2 else 0.6)
+        if i == n:
+            h2, op = 0, 0
+        else:
+            h2 = h
+            if abs(cen(i) - px) < w / 2 + 3:
+                alza, op = 6, 1
+        y = estante - h2 - alza
+        out.append('<g class="libro" data-x="%s" data-w="%s" data-h="%s"><rect x="%s" y="%s" width="%s" height="%s" rx="3" fill="%s" fill-opacity="%.3f"/>'
+                   '<line x1="%s" x2="%s" y1="%s" y2="%s" stroke-opacity="%s"/></g>'
+                   % (bx, w, h, bx, _f(y), w, _f(h2), c, op, bx + 5, bx + w - 5, _f(y + 16), _f(y + 16), "0.45" if h2 > 20 else "0"))
+    hx, hw, hh, _ = libros[n]
+    actual = j + 1
+    otro = actual - 2 - (actual % 3)
+    xa, xb, ya, yb = cen(otro), cen(actual), cima(otro) - 4, cima(actual) - 4
+    alto = min(ya, yb) - 26 - 4 * (actual - otro)
+    return ('<defs><radialGradient id="e-luz"><stop offset="0" stop-color="#f3cf96" stop-opacity=".35"/>'
+            '<stop offset="1" stop-color="#f3cf96" stop-opacity="0"/></radialGradient></defs>'
+            + '<ellipse class="luz" cx="%s" cy="250" rx="26" ry="9" fill="url(#e-luz)"/>' % _f(px)
+            + "".join(out)
+            + '<rect class="hueco" x="%s" y="%s" width="%s" height="%s" rx="3" stroke-opacity="0.5"/>' % (hx + 1, estante - hh + 1, hw - 2, hh - 2)
+            + '<line class="tabla" x1="22" y1="%s" x2="338" y2="%s"/>' % (estante + 2, estante + 2)
+            + '<path class="arco" d="M%s %sQ%s %s %s %s" stroke="%s" stroke-opacity="0" stroke-dasharray="60"/>'
+            % (_f(xa), _f(ya), _f((xa + xb) / 2), _f(alto), _f(xb), _f(yb), libros[actual][3])
+            + '<circle class="onda" cx="%s" cy="%s" r="6.5" stroke-opacity="0"/>' % (_f(px), _f(py))
+            + '<circle class="punto" cx="%s" cy="%s" r="6.5"/>' % (_f(px), _f(py)))
+
+
 def ilustracion():
-    """La escena de la portada. Harness: el operador en el centro y el equipo en órbita, sobre el pozo de la malla.
-    Wiki: una estantería que se llena, con el punto encima."""
-    if VARIANTE == "wiki":
-        lomos, x = [], 34
-        alturas = [150, 196, 172, 120, 210, 160, 188, 136, 178, 204, 146]
-        for i, h in enumerate(alturas):
-            w = 20 if i % 3 else 26
-            c = COLORES[i % len(COLORES)]
-            lomos.append('<rect class="lomo" style="--i:%d" x="%d" y="%d" width="%d" height="%d" rx="3" fill="%s" fill-opacity="%.2f"/>'
-                         % (i, x, 262 - h, w, h, c, 0.9 if i % 2 else 0.55))
-            lomos.append('<line class="lomo" style="--i:%d" x1="%d" x2="%d" y1="%d" y2="%d" stroke="#000" stroke-opacity=".45" stroke-width="2"/>'
-                         % (i, x + 4, x + w - 4, 262 - h + 18, 262 - h + 18))
-            x += w + 6
-        estante = '<path d="M20 264h300" stroke="#f3cf96" stroke-width="2"/><path d="M20 290h300" stroke="#333" stroke-width="1"/>'
-        malla = "".join('<path d="M20 %d h300" stroke="#f3cf96" stroke-opacity="%.2f" stroke-width="1"/>' % (300 + k * 10, 0.18 - k * 0.04) for k in range(4))
-        punto = ('<circle class="iso-onda" cx="290" cy="62" r="9" fill="none" stroke="#fff" stroke-width="1.5"/>'
-                 '<circle class="iso-punto" cx="290" cy="62" r="9" fill="#fff"/>')
-        dentro = estante + malla + "".join(lomos) + punto
+    colores = list(COLORES[:4])
+    wiki = VARIANTE == "wiki"
+    if wiki:
+        cuerpo, vb, attrs = escena_wiki(colores), "0 16 360 248", ' data-escena="wiki" data-turnos="%s"' % TW0
     else:
-        malla = []
-        for k in range(6):
-            rx, ry = 40 + k * 26, 14 + k * 9
-            malla.append('<ellipse class="malla" style="--i:%d" cx="170" cy="182" rx="%d" ry="%d" fill="none" stroke="#f3cf96" stroke-opacity="%.2f"/>'
-                         % (k, rx, ry, 0.55 - k * 0.08))
-        orbita = '<circle class="orbita" cx="170" cy="150" r="104" fill="none" stroke="#f3cf96" stroke-opacity=".5" stroke-width="1.4" stroke-dasharray="3 7"/>'
-        import math
-        nodos, lazos = [], []
-        for i, ang in enumerate([-90, 0, 90, 180]):
-            x = 170 + 104 * math.cos(math.radians(ang)); y = 150 + 104 * math.sin(math.radians(ang))
-            c = COLORES[i]
-            lazos.append('<line class="lazo" style="--i:%d" x1="170" y1="150" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="1.6" stroke-opacity=".8"/>' % (i, x, y, c))
-            nodos.append('<circle class="nodo" style="--i:%d" cx="%.1f" cy="%.1f" r="11" fill="%s"/>' % (i, x, y, c))
-        # el relevo: un arco que une a cada agente con el siguiente
-        relevo = '<path class="relevo" d="M170 46 A104 104 0 0 1 274 150 A104 104 0 0 1 170 254 A104 104 0 0 1 66 150" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="2" stroke-linecap="round"/>'
-        punto = ('<circle class="iso-onda" cx="170" cy="150" r="14" fill="none" stroke="#fff" stroke-width="1.5"/>'
-                 '<circle class="iso-punto" cx="170" cy="150" r="14" fill="#fff"/>')
-        dentro = "".join(malla) + orbita + "".join(lazos) + relevo + "".join(nodos) + punto
-    return ('<figure class="escena-portada" aria-hidden="true"><svg viewBox="0 0 340 340" focusable="false">%s</svg></figure>' % dentro)
+        while len(colores) < 4:
+            colores.append(colores[-1])
+        cuerpo, vb, attrs = escena_harness(colores[:4]), "0 22 360 220", ' data-escena="harness" data-rot="%s" data-turnos="%s"' % (R0, T0)
+    return ('<figure class="escena-caja">'
+            '<svg viewBox="%s" aria-hidden="true" focusable="false"%s>%s</svg>'
+            '<button type="button" class="escena-pausa" aria-pressed="false" aria-label="Pausar la animación" hidden>'
+            '<span aria-hidden="true"></span></button></figure>' % (vb, attrs, cuerpo))
 
 
 # ---------- Markdown mínimo: lo que usan los documentos del repo ----------
@@ -315,7 +430,7 @@ def plantilla(ruta, titulo, cuerpo, descripcion, migas=(), seccion=None, toc=(),
         for texto, dest in migas:
             pasos.append('<li><a href="%s">%s</a></li>' % (r(dest), html.escape(texto)) if dest
                          else '<li aria-current="page">%s</li>' % html.escape(texto))
-        miga = '<nav class="migas" aria-label="Estás en"><ol>%s</ol></nav>' % "".join(pasos)
+        miga = '<nav class="migas" aria-label="Estás en"><ol class="migas-lista">%s</ol></nav>' % "".join(pasos)
     indice = ""
     if len(toc) >= 3:
         indice = ('<details class="indice"><summary>En esta página · %d apartados</summary><ol>%s</ol></details>'
@@ -334,7 +449,7 @@ def plantilla(ruta, titulo, cuerpo, descripcion, migas=(), seccion=None, toc=(),
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="%(favicon)s" type="image/svg+xml">
 <link rel="preload" href="%(fuente)s" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="%(css)s">
+<link rel="stylesheet" href="%(css)s">%(script)s
 </head>
 <body class="sitio-%(variante)s%(clase_pag)s"%(estilo_pag)s>
 <a class="saltar" href="#contenido">Ir al contenido</a>
@@ -359,7 +474,7 @@ def plantilla(ruta, titulo, cuerpo, descripcion, migas=(), seccion=None, toc=(),
 </footer>
 </body>
 </html>
-""" % dict(titulo_doc=titulo_doc, desc=html.escape(descripcion[:300]), css=r("estilo.css"), inicio=r("index.html"),
+""" % dict(titulo_doc=titulo_doc, desc=html.escape(descripcion[:300]), css=r("estilo.css") + "?v=" + VERSION, script=('\n<script src="%s?v=%s" defer></script>' % (r("portada.js"), VERSION)) if ruta == "index.html" else "", inicio=r("index.html"),
            marca=html.escape(CFG["titulo"]), nav="".join(nav), migas=miga, indice=indice, cuerpo=cuerpo,
            pie_extra=pie_extra, licencia=html.escape(CFG["licencia"]), repo=REPO,
            favicon=r("marca/favicon.svg"), fuente=r("fuentes/archivo.woff2"), variante=VARIANTE, iso=isotipo(),
@@ -443,8 +558,10 @@ def generar():
             extra_portada.append('<section class="bloque revela">%s</section>' % h)
     clonar = ""
     if CFG.get("clonar"):
-        clonar = ('<div class="clonar"><p class="etiqueta" id="clonar">Para empezar, clona el repo</p>'
-                  '<pre tabindex="0" aria-labelledby="clonar"><code><span class="prompt" aria-hidden="true">$ </span>git clone https://github.com/%s</code></pre></div>' % REPO)
+        clonar = ('<div class="clonar"><div class="clonar-cab"><p class="etiqueta" id="clonar">Para empezar, clona el repo</p>'
+                  '<button type="button" class="copiar" hidden>Copiar</button></div>'
+                  '<pre tabindex="0" aria-labelledby="clonar"><code><span class="prompt" aria-hidden="true">$ </span><span class="orden">git clone https://github.com/%s</span></code></pre>'
+                  '<p class="copiado" role="status" aria-live="polite"></p></div>' % REPO)
     acciones = '<p class="acciones">'
     for a in CFG.get("acciones", []):
         dest = a["href"] if a["href"].startswith(("http", "#")) else a["href"]
@@ -496,8 +613,8 @@ def generar():
             nav += ('<a class="ant" href="%s"><span>Anterior</span>%s</a>' % (relativo(p["html"], ant["html"]), html.escape(ant["nombre"]))) if ant else "<span></span>"
             nav += ('<a class="sig" href="%s"><span>Siguiente</span>%s</a>' % (relativo(p["html"], sig["html"]), html.escape(sig["nombre"]))) if sig else "<span></span>"
             nav += "</nav>"
-            salida_doc = ('<article class="doc"><p class="doc-seccion">%s<span>%s</span></p><h1>%s</h1>%s</article>%s<p class="acciones"><a class="boton" href="%s">Volver a %s</a> %s</p>'
-                          % (icono(s["dir"]), html.escape(s["nombre"]), html.escape(titulo or p["nombre"]), h, nav, relativo(p["html"], ruta), html.escape(s["nombre"]), gh(rel)))
+            salida_doc = ('<article class="doc"><p class="doc-seccion"><span class="num" aria-hidden="true">%02d</span>%s<span>%s</span></p><h1>%s</h1>%s</article>%s<p class="acciones"><a class="boton" href="%s">Volver a %s</a> %s</p>'
+                          % (CFG["secciones"].index(s) + 1, icono(s["dir"]), html.escape(s["nombre"]), html.escape(titulo or p["nombre"]), h, nav, relativo(p["html"], ruta), html.escape(s["nombre"]), gh(rel)))
             salida[p["html"]] = plantilla(p["html"], titulo or p["nombre"], salida_doc, p["desc"],
                                           migas=[(s["nombre"], ruta), (titulo or p["nombre"], None)], seccion=s["dir"], toc=toc)
 

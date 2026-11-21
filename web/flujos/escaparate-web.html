@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="../marca/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../estilo.css">
+<link rel="stylesheet" href="../estilo.css?v=e1fa3ed1">
 </head>
 <body class="sitio-harness" style="--acento:#e6b55d">
 <a class="saltar" href="#contenido">Ir al contenido</a>
@@ -21,9 +21,9 @@
   </div>
 </header>
 <main id="contenido" class="marco">
-<nav class="migas" aria-label="Estás en"><ol><li><a href="../index.html">Inicio</a></li><li><a href="../flujos/index.html">Flujos</a></li><li aria-current="page">Flujo: cambio en el escaparate web</li></ol></nav>
+<nav class="migas" aria-label="Estás en"><ol class="migas-lista"><li><a href="../index.html">Inicio</a></li><li><a href="../flujos/index.html">Flujos</a></li><li aria-current="page">Flujo: cambio en el escaparate web</li></ol></nav>
 <details class="indice"><summary>En esta página · 4 apartados</summary><ol><li><a href="#pasos">Pasos</a></li><li><a href="#reglas-del-flujo">Reglas del flujo</a></li><li><a href="#qué-se-automatiza-y-qué-no">Qué se automatiza y qué no</a></li><li><a href="#coste-de-referencia">Coste de referencia</a></li></ol></details>
-<article class="doc"><p class="doc-seccion"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><path d="M7 6c6 0 6 6 10 6M7 18c6 0 6-6 10-6"/></svg><span>Flujos</span></p><h1>Flujo: cambio en el escaparate web</h1><p><strong>Para qué:</strong> cualquier cambio de texto o contenido en una web pública que no toca el diseño ni las animaciones. <strong>Estado:</strong> probado una vez, con los textos de una versión nueva de la web del propio equipo. La prueba está en <a href="../ejemplos/primera-prueba-escaparate-web.html">ejemplos/primera-prueba-escaparate-web.md</a>.</p>
+<article class="doc"><p class="doc-seccion"><span class="num" aria-hidden="true">04</span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><path d="M7 6c6 0 6 6 10 6M7 18c6 0 6-6 10-6"/></svg><span>Flujos</span></p><h1>Flujo: cambio en el escaparate web</h1><p><strong>Para qué:</strong> cualquier cambio de texto o contenido en una web pública que no toca el diseño ni las animaciones. <strong>Estado:</strong> probado una vez, con los textos de una versión nueva de la web del propio equipo. La prueba está en <a href="../ejemplos/primera-prueba-escaparate-web.html">ejemplos/primera-prueba-escaparate-web.md</a>.</p>
 <p><strong>Esqueleto y adaptador:</strong> los pasos 0 a 5 y 7 a 9 son el esqueleto común (ver <a href="../flujos/index.html">README</a>). Esta página es el <strong>adaptador web</strong>: la vista previa es una copia de la rama publicada bajo <code>/preview/prN/</code> y el paso 6 es la prueba de accesibilidad y móvil de <a href="https://github.com/JosebaDG/harness/blob/main/herramientas/prueba-web.py">herramientas/prueba-web.py</a>.</p>
 <p><strong>Puertas de la persona:</strong> dos. Al principio, el encargo con sus palabras, y al final, sí, no o cambios. Nada en medio, <strong>salvo</strong> cuando el paso 3 encuentra en <code>main</code> algo ya publicado que no debe estar: se avisa a la persona en ese momento, porque despublicar es suyo y esperar a la puerta final lo deja días a la vista.</p>
 <h2 id="pasos">Pasos</h2>

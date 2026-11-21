@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="../../marca/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../../fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../../estilo.css">
+<link rel="stylesheet" href="../../estilo.css?v=e1fa3ed1">
 </head>
 <body class="sitio-harness" style="--acento:#f3cf96">
 <a class="saltar" href="#contenido">Ir al contenido</a>
@@ -21,9 +21,9 @@
   </div>
 </header>
 <main id="contenido" class="marco">
-<nav class="migas" aria-label="Estás en"><ol><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">011 · El ritmo que nadie miraba entero</li></ol></nav>
+<nav class="migas" aria-label="Estás en"><ol class="migas-lista"><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">011 · El ritmo que nadie miraba entero</li></ol></nav>
 <details class="indice"><summary>En esta página · 3 apartados</summary><ol><li><a href="#qué-pasó-en-llano">Qué pasó, en llano</a></li><li><a href="#qué-cambió-en-el-harness">Qué cambió en el harness</a></li><li><a href="#seguimiento-el-relevo-que-se-perdió">Seguimiento: el relevo que se perdió</a></li></ol></details>
-<article class="doc"><p class="doc-seccion"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.4" class="lleno"/></svg><span>Ejemplos</span></p><h1>011 · El ritmo que nadie miraba entero</h1><ul>
+<article class="doc"><p class="doc-seccion"><span class="num" aria-hidden="true">05</span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.4" class="lleno"/></svg><span>Ejemplos</span></p><h1>011 · El ritmo que nadie miraba entero</h1><ul>
 <li><strong>Cuándo:</strong> cuando cada agente tiene su propia rutina y se comprueba que cada una se ejecuta, pero nadie mira si juntas hacen avanzar los hilos.
 </li>
 <li><strong>Qué hacer:</strong> medir el flujo y no solo las ejecuciones: cuántas vueltas completas da un hilo por ciclo y dónde se para. Los horarios se diseñan juntos, en el orden de los turnos, y van en la configuración del equipo, no en la memoria de cada rutina. Pieza: <a href="../../nucleo/protocolo.html#ritmo">protocolo, «Ritmo»</a> y la clave <code>ciclo</code> de la configuración de <a href="https://github.com/JosebaDG/harness/blob/main/herramientas/equipo.py"><code>equipo.py</code></a>.

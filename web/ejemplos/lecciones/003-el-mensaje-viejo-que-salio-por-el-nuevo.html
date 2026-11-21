@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="../../marca/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../../fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../../estilo.css">
+<link rel="stylesheet" href="../../estilo.css?v=e1fa3ed1">
 </head>
 <body class="sitio-harness" style="--acento:#f3cf96">
 <a class="saltar" href="#contenido">Ir al contenido</a>
@@ -21,9 +21,9 @@
   </div>
 </header>
 <main id="contenido" class="marco">
-<nav class="migas" aria-label="Estás en"><ol><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">003 · El mensaje viejo que salió por el nuevo</li></ol></nav>
+<nav class="migas" aria-label="Estás en"><ol class="migas-lista"><li><a href="../../index.html">Inicio</a></li><li><a href="../../ejemplos/index.html">Ejemplos</a></li><li aria-current="page">003 · El mensaje viejo que salió por el nuevo</li></ol></nav>
 <details class="indice"><summary>En esta página · 3 apartados</summary><ol><li><a href="#qué-pasó-en-llano">Qué pasó, en llano</a></li><li><a href="#qué-cambió-en-el-harness">Qué cambió en el harness</a></li><li><a href="#cómo-se-comprueba">Cómo se comprueba</a></li></ol></details>
-<article class="doc"><p class="doc-seccion"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.4" class="lleno"/></svg><span>Ejemplos</span></p><h1>003 · El mensaje viejo que salió por el nuevo</h1><ul>
+<article class="doc"><p class="doc-seccion"><span class="num" aria-hidden="true">05</span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.4" class="lleno"/></svg><span>Ejemplos</span></p><h1>003 · El mensaje viejo que salió por el nuevo</h1><ul>
 <li><strong>Cuándo:</strong> cuando un agente escribe su mensaje en un archivo y lo publica con <code>equipo.py escribir</code>, <code>nuevo</code> o <code>cerrar</code>, sobre todo si reutiliza el mismo nombre de archivo de una ronda a otra.
 </li>
 <li><strong>Qué hacer:</strong> escribir el archivo y enviarlo en dos pasos separados, nunca a la vez; un nombre de archivo nuevo cada vez; mirar la línea <code>EMPIEZA:</code> que enseña <code>equipo.py</code> al enviar. Pieza: <a href="https://github.com/JosebaDG/harness/blob/main/herramientas/equipo.py"><code>equipo.py</code></a>, que para si el archivo tiene más de 15 minutos (<code>--viejo</code> lo salta).
