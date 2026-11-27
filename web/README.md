@@ -14,4 +14,8 @@ Si cambias un `.md`, rehaz la web en el mismo PR:
 python3 web/generar.py
 ```
 
-`python3 web/generar.py --comprobar` sale con 1 si `web/` no está al día. La Action también la rehace antes de publicar.
+`python3 web/generar.py --comprobar` sale con 1 si `web/` no está al día: si falta una página, si una no coincide con su `.md` o si sobra una huérfana. La Action [`web-al-dia.yml`](../.github/workflows/web-al-dia.yml) lo comprueba en cada PR, y `pages.yml` también la rehace antes de publicar.
+
+Si renombras o quitas un `.md`, `generar.py` borra su página vieja. Solo borra `.html` dentro de `web/`, que los escribe todos él; no toca nada más.
+
+`python3 web/prueba_generar.py` prueba el generador sobre una copia temporal del repo: una web desfasada, un renombrado y la web actual.

@@ -1,0 +1,34 @@
+# Comprueba en cada PR que web/ está al día con los .md del repo.
+#
+# - web/generar.py --comprobar falla si falta una página, si una no coincide
+#   con su .md o si sobra una huérfana (de un .md renombrado o quitado).
+#   Se arregla con: python3 web/generar.py, y el resultado en el mismo PR.
+# - web/prueba_generar.py prueba el generador sobre una copia temporal.
+#
+# Va en su propio archivo para no chocar con pages.yml, que publica.
+
+name: Web al día
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: web/ al día
+        run: python3 web/generar.py --comprobar
+
+      - name: Pruebas del generador
+        run: python3 web/prueba_generar.py
