@@ -4,16 +4,14 @@ Método y herramientas para que una persona y un equipo de agentes de IA trabaje
 
 No depende de un proveedor de IA concreto.
 
-## Estado: en construcción
+## Estado: primera versión completa
 
-Este repo se monta por PR, en este orden:
+Este repo se montó por PR, en este orden:
 
 1. **Base:** estructura, licencia y atribución.
 2. **Prueba de lo público:** una Action que revisa cada PR. Se estrena con cebos inventados, para verla fallar antes de que entre contenido de verdad.
 3. **Herramientas:** el canal sobre issues, el acceso por device flow y la prueba de webs.
 4. **Contenido:** núcleo, especialistas, flujos y ejemplos.
-
-Hasta el paso 3 no hay nada que instalar ni ejecutar.
 
 ## Para quién
 
