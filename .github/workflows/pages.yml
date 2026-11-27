@@ -5,8 +5,9 @@
 #
 # Mientras web/ no tenga index.html no publica nada: el trabajo sale en verde
 # y lo dice en el resumen. Después de publicar pasa herramientas/prueba-web.py
-# sobre la dirección publicada, probando la lista real de páginas generadas
-# por el paso preparar (incluidas las creadas al vuelo desde .md).
+# sobre la dirección publicada, en todas las páginas .html de web/ menos la
+# 404 (antes solo miraba las index.html y se dejaba fuera la mayoría). web/
+# llega al día porque «Web al día» lo exige en cada PR.
 # Si la prueba falla, la web ya está publicada: el rojo avisa para arreglarla
 # en el siguiente PR.
 
@@ -34,13 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       hay_web: ${{ steps.mira.outputs.hay_web }}
-      paginas: ${{ steps.mira.outputs.paginas }}
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
 
       - name: Rehacer web/ desde los .md
         shell: bash
@@ -53,11 +49,6 @@ jobs:
         run: |
           if [ -f web/index.html ]; then
             echo "hay_web=true" >> "$GITHUB_OUTPUT"
-            {
-              echo "paginas<<EOF_PAGINAS"
-              (cd web && find . -name index.html | sed -e 's|^\.||' -e 's|index\.html$||' | sort)
-              echo "EOF_PAGINAS"
-            } >> "$GITHUB_OUTPUT"
           else
             echo "hay_web=false" >> "$GITHUB_OUTPUT"
             echo "web/ todavía no tiene index.html: no se publica nada." | tee -a "$GITHUB_STEP_SUMMARY"
@@ -88,7 +79,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   probar:
-    needs: [preparar, publicar]
+    needs: publicar
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -113,10 +104,9 @@ jobs:
         shell: bash
         env:
           DIRECCION: ${{ needs.publicar.outputs.page_url }}
-          PAGINAS: ${{ needs.preparar.outputs.paginas }}
         run: |
           set -euo pipefail
-          mapfile -t paginas < <(printf '%s\n' "$PAGINAS" | grep -v '^$')
+          mapfile -t paginas < <(cd web && find . -name '*.html' ! -name 404.html | sed -e 's|^\.||' -e 's|index\.html$||' | sort)
           echo "Páginas: ${paginas[*]}"
           python herramientas/prueba-web.py --url "$DIRECCION" --paginas "${paginas[@]}" \
             --axe node_modules/axe-core/axe.min.js --capturas capturas-prueba
