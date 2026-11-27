@@ -133,7 +133,8 @@ tr:last-child td { border-bottom: 0; }
 /* ---------- Portada ---------- */
 .portada { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--e-4); align-items: center; padding-block: var(--e-4) var(--e-6); min-height: min(86svh, 52rem); }
 .antetitulo { margin: 0 0 var(--e-3); }
-.antetitulo a { color: var(--tinta-2); text-decoration: none; display: inline-flex; align-items: center; gap: 0.6rem; }
+.antetitulo a { color: var(--tinta-2); text-decoration: none; display: inline-flex; align-items: center; gap: 0.6rem;
+  padding-block: 0.1875rem; } /* 24 px de alto como mínimo para tocarlo (WCAG 2.5.8) */
 .antetitulo a::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px color-mix(in srgb, var(--oro) 30%, transparent); }
 .antetitulo a:hover { color: var(--tinta); }
 .portada h1 { font-size: var(--t-display); font-weight: 330; font-stretch: 125%; letter-spacing: -0.035em; line-height: 0.98; margin-bottom: var(--e-4);
@@ -285,6 +286,18 @@ tr:last-child td { border-bottom: 0; }
   .menu a { min-height: 2.25rem; padding: 0 0.6rem; }
   .portada { padding-top: var(--e-2); min-height: 0; }
   .escena-caja { order: -1; width: min(100%, 24rem); margin-bottom: calc(-1 * var(--e-2)); }
+}
+/* Pantallas estrechas (menos de unos 400 px): la escena va detrás del texto, para que el título y el botón principal
+   salgan en la primera pantalla */
+@media (max-width: 25rem) {
+  .escena-caja { order: 0; width: min(100%, 18rem); margin-bottom: 0; }
+  .portada { padding-top: 0; }
+  .portada h1 { margin-bottom: var(--e-3); }
+  .portada-texto > p:not(.antetitulo):not(.acciones) { font-size: 1.0625rem; line-height: 1.45; }
+  .portada-texto > p:not(.antetitulo):not(.acciones) + p:not(.acciones) { font-size: 1rem; }
+  .acciones { margin-top: var(--e-3); }
+  .boton { letter-spacing: 0.12em; }
+  .menu a { padding: 0 0.45rem; gap: 0.35rem; letter-spacing: 0.02em; }
 }
 @media (max-width: 30rem) {
   .pasos { grid-template-columns: 1fr; }

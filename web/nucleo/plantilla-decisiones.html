@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="../marca/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../estilo.css?v=e1fa3ed1">
+<link rel="stylesheet" href="../estilo.css?v=6309380c">
 </head>
 <body class="sitio-harness" style="--acento:#a2bcff">
 <a class="saltar" href="#contenido">Ir al contenido</a>
@@ -34,6 +34,8 @@
 <li><strong>Se apunta en el mismo turno en que la persona decide</strong>, aunque sea en un chat: <code>equipo.py apunta &lt;estado&gt; &quot;tema: qué · quién · dónde · lo que le queda a la persona&quot;</code>.
 </li>
 <li><strong>Cambiar una decisión:</strong> la línea vieja pasa a <code>sustituido → AAAA-MM-DD</code> y la nueva va arriba. No se borra nada.
+</li>
+<li><strong>Aquí solo lo que sigue mandando</strong> (normas, decisiones vigentes, lo aparcado y lo que espera a la persona). La crónica cumplida y lo sustituido se mueven tal cual a <code>DECISIONES-historico.md</code>, por tipo y nunca por fecha: una norma antigua sigue aquí. <code>decisiones</code> busca ahí cuando no encuentra nada vivo.
 </li></ul>
 <p>Estados: <code>decidido</code>, <code>aparcado</code>, <code>espera:&lt;persona&gt;</code> y <code>sustituido</code>.</p>
 <p>&lt;!-- Ejemplo inventado, bórralo al apuntar la primera decisión de verdad:</p>
