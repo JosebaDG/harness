@@ -10,6 +10,7 @@ Copia lo que hay debajo de la línea en un `DECISIONES.md` en la raíz del repo 
 - **Si una skill, un mensaje programado, un documento o el cuerpo de un issue dice otra cosa, manda esto.** No se actúa sobre lo viejo: se avisa a la persona del desfase en una línea.
 - **Se apunta en el mismo turno en que la persona decide**, aunque sea en un chat: `equipo.py apunta <estado> "tema: qué · quién · dónde · lo que le queda a la persona"`.
 - **Cambiar una decisión:** la línea vieja pasa a `sustituido → AAAA-MM-DD` y la nueva va arriba. No se borra nada.
+- **Aquí solo lo que sigue mandando** (normas, decisiones vigentes, lo aparcado y lo que espera a la persona). La crónica cumplida y lo sustituido se mueven tal cual a `DECISIONES-historico.md`, por tipo y nunca por fecha: una norma antigua sigue aquí. `decisiones` busca ahí cuando no encuentra nada vivo.
 
 Estados: `decidido`, `aparcado`, `espera:<persona>` y `sustituido`.
 

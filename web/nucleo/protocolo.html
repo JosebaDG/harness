@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="../marca/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../estilo.css?v=e1fa3ed1">
+<link rel="stylesheet" href="../estilo.css?v=6309380c">
 </head>
 <body class="sitio-harness" style="--acento:#a2bcff">
 <a class="saltar" href="#contenido">Ir al contenido</a>
@@ -76,6 +76,8 @@ python3 equipo.py flag &lt;n|owner/repo#n&gt; &lt;flag&gt; [quitar]</code></pre>
 <li><strong>Si chocan, gana el registro.</strong> Una skill, un mensaje programado, un documento o la memoria de un agente pierden frente al registro y las flags. No se actúa sobre lo viejo: se avisa a la persona del desfase en una línea.
 </li>
 <li><strong>Cambiar es sustituir.</strong> La línea vieja pasa a <code>sustituido</code> con la fecha de la nueva, y la nueva va arriba. No se borra nada: así se ve la historia.
+</li>
+<li><strong>Un «qué» corto.</strong> El «qué» de cada línea cabe en una frase clara, de unos 400 caracteres como mucho. El porqué largo y los matices van a un anexo del histórico con el mismo tema, copiados tal cual. Cada <code>decisiones &lt;tema&gt;</code> tiene un tope de caracteres, y con líneas largas trae menos decisiones por consulta y cuesta más leerla. Al partir una línea, el estado, lo que le queda a la persona y los enlaces se quedan en la corta.
 </li>
 <li><strong>Sin listas de decisiones dentro de skills o mensajes programados.</strong> Dicen el cómo y remiten al registro. Una lista copiada es otra foto fija.
 </li>
@@ -147,7 +149,9 @@ python3 equipo.py flag &lt;n|owner/repo#n&gt; &lt;flag&gt; [quitar]</code></pre>
 </li></ul>
 <h2 id="resiliencia">Resiliencia</h2>
 <ul>
-<li><strong>Al arrancar una rutina:</strong> si la bandeja dice <code>REGISTRO CAMBIADO</code>, se lee <code>decisiones</code> antes de nada.
+<li><strong>Al arrancar una rutina:</strong> si la bandeja dice <code>REGISTRO CAMBIADO</code>, se leen las líneas nuevas que trae el aviso antes de nada. No se relee el registro entero: lo demás ya se leyó. Si no tiene la versión anterior (herramienta o máquina nueva), el aviso enseña lo que espera a la persona y lo más nuevo, con tope; lo demás se busca por tema. Nunca se lee el registro entero de golpe.
+</li>
+<li><strong>Leer poco:</strong> <code>decisiones &lt;tema&gt;</code> enseña como mucho 20 líneas (lo que espera a la persona primero). Si no hay nada vivo, busca en el histórico. Con <code>--todo</code> se pasa por páginas de 6.000 caracteres (<code>--pagina N</code>), y con <code>--historico</code> se busca siempre también en el histórico. <code>--todo</code> es la excepción: se dice en el hilo por qué hacía falta.
 </li>
 <li><strong>Archivo de estado:</strong> cada agente con trabajos largos lleva uno propio (objetivo, a medias, siguiente paso). Lo decidido no va ahí, va al registro.
 </li>

@@ -61,6 +61,7 @@ Reglas:
 - **Antes de pedir o de hacer, se mira.** `equipo.py decisiones <tema>`. Lo `decidido` o `aparcado` no se pide ni se presenta como pendiente, aunque el cuerpo del issue tenga casillas sin marcar.
 - **Si chocan, gana el registro.** Una skill, un mensaje programado, un documento o la memoria de un agente pierden frente al registro y las flags. No se actúa sobre lo viejo: se avisa a la persona del desfase en una línea.
 - **Cambiar es sustituir.** La línea vieja pasa a `sustituido` con la fecha de la nueva, y la nueva va arriba. No se borra nada: así se ve la historia.
+- **Un «qué» corto.** El «qué» de cada línea cabe en una frase clara, de unos 400 caracteres como mucho. El porqué largo y los matices van a un anexo del histórico con el mismo tema, copiados tal cual. Cada `decisiones <tema>` tiene un tope de caracteres, y con líneas largas trae menos decisiones por consulta y cuesta más leerla. Al partir una línea, el estado, lo que le queda a la persona y los enlaces se quedan en la corta.
 - **Sin listas de decisiones dentro de skills o mensajes programados.** Dicen el cómo y remiten al registro. Una lista copiada es otra foto fija.
 - **Sin registro no hay acción.** Si una revisión no puede leer el registro, solo lee: no pide decisiones ni fusiona.
 
@@ -110,7 +111,8 @@ Reglas:
 
 ## Resiliencia
 
-- **Al arrancar una rutina:** si la bandeja dice `REGISTRO CAMBIADO`, se lee `decisiones` antes de nada.
+- **Al arrancar una rutina:** si la bandeja dice `REGISTRO CAMBIADO`, se leen las líneas nuevas que trae el aviso antes de nada. No se relee el registro entero: lo demás ya se leyó. Si no tiene la versión anterior (herramienta o máquina nueva), el aviso enseña lo que espera a la persona y lo más nuevo, con tope; lo demás se busca por tema. Nunca se lee el registro entero de golpe.
+- **Leer poco:** `decisiones <tema>` enseña como mucho 20 líneas (lo que espera a la persona primero). Si no hay nada vivo, busca en el histórico. Con `--todo` se pasa por páginas de 6.000 caracteres (`--pagina N`), y con `--historico` se busca siempre también en el histórico. `--todo` es la excepción: se dice en el hilo por qué hacía falta.
 - **Archivo de estado:** cada agente con trabajos largos lleva uno propio (objetivo, a medias, siguiente paso). Lo decidido no va ahí, va al registro.
 - **Al volver de una tarea larga:** se apunta lo que se decidió dentro y se relee el registro del tema al que se vuelve.
 - **Tras perder la memoria o la máquina:** primero el registro y los hilos abiertos, luego el archivo de estado. Lo que solo estaba en la máquina o en un chat se trata como no decidido y se confirma con la persona en una línea.

@@ -14,6 +14,9 @@ Versión del kit «equipo en una caja», generalizada desde la herramienta de un
   equipo.py avisado <n>              marca que ya avisaste a la persona de ese hilo
   equipo.py etiquetas [owner/repo]   crea o pone al día las etiquetas (lo hace el coordinador)
   equipo.py decisiones [texto]       ANTES DE PEDIR O HACER: registro vivo + issues y PR con flag
+                                     (como mucho 20 líneas y 6.000 caracteres; --todo lo pasa por páginas
+                                     de 6.000 con --pagina N; si no hay nada vivo busca en el histórico;
+                                     --historico busca ahí siempre)
   equipo.py apunta <estado> "<tema: qué · quién · dónde · lo que le queda a la persona>"   añade una línea a DECISIONES.md
   equipo.py flag <n|owner/repo#n> <flag> [quitar]   pone o quita una flag (decidido, aparcado...)
   equipo.py tablero                  reescribe el issue «Tablón»: lo de la persona, lo parado y los proyectos
@@ -22,6 +25,11 @@ escribir, nuevo y cerrar paran si el archivo tiene más de 15 min (--viejo lo sa
 y la firma escritas a mano, porque ya las ponen ellos.
 En «turno» puedes escribir el nombre de la persona o la palabra «humano».
 EQUIPO_CFG y EQUIPO_ESTADO cambian dónde se guardan la config y el estado (por defecto ~/.config/equipo/).
+bandeja, cuando cambia el registro, enseña solo las líneas nuevas o cambiadas desde la última vez que lo
+leíste (compara con esa versión), no manda releerlo entero. La primera vez (sin versión leída) enseña lo que
+espera a la persona y lo más nuevo, no el registro. Ninguna salida copia el registro entero de golpe.
+apunta no te avisa de tu propia línea.
+El histórico (crónica y sustituidas) va en DECISIONES-historico.md o en "registro_historico" de la config.
 «decisiones» busca flags solo en el repo del canal. Para mirar más repos, añade a la config
 "repos": ["owner/repo1", "owner/repo2"].
 Lo que no publique la persona (sola o con una de las Apps de "apps_propias" en la config) es MATERIAL
@@ -52,13 +60,27 @@ ESPERA_H = "espera:" + H   # la única marca que permite pedirle algo a la perso
 PRUEBA = "--prueba" in sys.argv
 VIEJO = "--viejo" in sys.argv
 REGISTRO = "DECISIONES.md"   # fuente viva de decisiones (una línea por decisión)
+HISTORICO = "DECISIONES-historico.md"   # crónica y sustituidas: no se lee en cada ronda
+MAX_DECISIONES = 20       # líneas que enseña decisiones; --todo pasa a páginas, nunca todo de golpe
+MAX_CARACTERES = 6000     # y como mucho estos caracteres (unas líneas son muy largas)
+MAX_AVISO = 15            # líneas nuevas que enseña bandeja; del resto, solo el tema
+MAX_TEMAS = 2000          # caracteres de la lista de temas que no caben en el aviso
+RECIENTES = 8             # líneas más nuevas que enseña bandeja la primera vez (sin versión leída)
 FLAGS = [("decidido", "0e8a16", "Decidido: no se vuelve a pedir. Detalle en DECISIONES.md o en el último comentario"),
          ("aparcado", "bfbfbf", "Decidido no hacerlo ahora: no se pide hasta que " + HUMANO + " lo reactive"),
          (ESPERA_H, "d93f0b", "Necesita a " + HUMANO + ": la única marca que permite pedirle algo"),
          ("sustituido", "5c5c5c", "Lo reemplaza una decisión posterior: mira el último comentario")]
 ESTADOS = [f[0] for f in FLAGS]
 ESPERA = [ESPERA_H, "decisión-humana"]   # decisión-humana: alias admitido si un repo ya usaba ese nombre
-ARGS = [a for a in sys.argv[1:] if a not in ("--prueba", "--viejo")]
+TODO = "--todo" in sys.argv
+SOLO_HIST = "--historico" in sys.argv
+def _pagina(argv):
+    """--pagina N (por defecto 1): con --todo, el registro se lee por páginas de MAX_CARACTERES."""
+    for i, a in enumerate(argv):
+        if a == "--pagina" and i + 1 < len(argv) and argv[i + 1].isdigit(): return max(1, int(argv[i + 1])), {i, i + 1}
+    return 1, set()
+PAGINA, _fuera = _pagina(sys.argv[1:])
+ARGS = [a for i, a in enumerate(sys.argv[1:]) if i not in _fuera and a not in ("--prueba", "--viejo", "--todo", "--historico")]
 
 def cfg():
     if not os.path.exists(CFG): sys.exit("Falta config: equipo.py config <Agente> <owner/repo> <Persona> <Agente1,Agente2,...> [ruta_token]")
@@ -298,11 +320,93 @@ def _plano(t):
     import unicodedata
     return unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode().lower()
 
-def registro(c):
-    """Devuelve (texto, sha) de DECISIONES.md en el repo del canal."""
+def registro(c, ruta=REGISTRO):
+    """Devuelve (texto, sha) de DECISIONES.md (u otro archivo) en el repo del canal."""
     import base64
-    d, _ = api(c, "GET", "/contents/" + REGISTRO)
+    d, _ = api(c, "GET", "/contents/" + urllib.parse.quote(ruta))
     return base64.b64decode(d["content"]).decode(), d["sha"]
+
+def version(c, sha):
+    """El texto de una versión vieja del registro por su sha (la que se leyó la última vez)."""
+    import base64
+    d, _ = api(c, "GET", "/git/blobs/" + sha)
+    return base64.b64decode(d["content"]).decode()
+
+def lineas_registro(texto):
+    return [l for l in texto.splitlines() if l.startswith("- ")]
+
+def aviso_registro(viejo, nuevo, maximo=MAX_AVISO):
+    """Lo que dice bandeja cuando cambia el registro: solo las líneas nuevas o cambiadas, no el archivo entero.
+    Una línea cambiada sale entera (la nueva versión); una movida tal cual a otra sección no sale."""
+    antes = set(lineas_registro(viejo)); ahora = lineas_registro(nuevo)
+    nuevas = [l for l in ahora if l not in antes]
+    fuera = len(antes - set(ahora))
+    if not nuevas:
+        return ["REGISTRO CAMBIADO: ninguna decisión nueva%s. No hace falta releerlo." % (
+            "; %d línea(s) salieron (sustituidas o al histórico)" % fuera if fuera else "")]
+    out = ["REGISTRO CAMBIADO: %d decisión(es) nueva(s) o cambiada(s). Léelas antes de actuar (el resto ya lo leíste):" % len(nuevas)]
+    sel, fuera = recorta(nuevas, False, maximo)
+    out += ["  " + l for l in sel]
+    if fuera:
+        out.append("  … y %d más; aquí solo su tema. Lee la que te afecte con equipo.py decisiones <tema>:" % fuera)
+        out += temas(nuevas[len(sel):])
+    return out
+
+def tema(l):
+    """El tema de una línea del registro (lo que va antes de los dos puntos), para listar sin copiar la línea."""
+    partes = l.split(" · ", 2)
+    t = (partes[2] if len(partes) > 2 else l).split(" · ", 1)[0]
+    return (t.split(":", 1)[0] if ":" in t[:90] else t[:70]).strip()
+
+def temas(lineas, caracteres=MAX_TEMAS):
+    out, n = [], 0
+    for l in lineas:
+        x = "    · %s %s" % (l[2:12], tema(l))
+        if out and n + len(x) > caracteres:
+            out.append("    · … y %d tema(s) más" % (len(lineas) - len(out))); break
+        out.append(x); n += len(x)
+    return out
+
+def primera_vez(texto, recientes=RECIENTES):
+    """bandeja sin versión leída (herramienta nueva, VM nueva, estado perdido): no manda leer el registro entero.
+    Enseña lo que espera a la persona y las líneas más nuevas, con tope, y el resto se busca por tema."""
+    vivas = [l for l in lineas_registro(texto) if "· sustituido" not in l]
+    prio = [l for l in vivas if " · espera:" in l or " · decisión-humana" in l]
+    nuevas = sorted([l for l in vivas if l not in prio], key=lambda l: l[2:12], reverse=True)[:recientes]
+    sel, fuera = recorta(prio + nuevas)
+    out = ["REGISTRO: primera vez con esta herramienta (no tengo la versión que leíste). No lo leas entero: "
+           "te enseño lo que espera a la persona y lo más nuevo; lo demás, con equipo.py decisiones <tema>."]
+    out += ["  " + l for l in sel]
+    if fuera: out += temas((prio + nuevas)[len(sel):])
+    return out
+
+def pagina(sel, n=1, caracteres=MAX_CARACTERES):
+    """Parte la lista en páginas de como mucho `caracteres` (al menos una línea por página).
+    Devuelve (líneas de la página n, número de páginas)."""
+    pags, act, k = [], [], 0
+    for l in sel:
+        if act and k + len(l) > caracteres: pags.append(act); act, k = [], 0
+        act.append(l); k += len(l)
+    if act: pags.append(act)
+    if not pags: return [], 0
+    return pags[min(n, len(pags)) - 1], len(pags)
+
+def recorta(sel, todo=False, maximo=MAX_DECISIONES, caracteres=MAX_CARACTERES):
+    """Corta la lista por líneas y por caracteres (siempre al menos una). Devuelve (lista, cuántas fuera)."""
+    if todo: return sel, 0
+    out, n = [], 0
+    for l in sel[:maximo]:
+        if out and n + len(l) > caracteres: break
+        out.append(l); n += len(l)
+    return out, len(sel) - len(out)
+
+def elige(lineas, filtro, todo=False, maximo=MAX_DECISIONES):
+    """Las líneas vivas que casan con el filtro; primero lo que espera a la persona y lo aparcado.
+    Devuelve (las que se enseñan, cuántas se quedan fuera)."""
+    sel = [l for l in lineas if l.startswith("- ") and "· sustituido" not in l and (not filtro or filtro in _plano(l))]
+    prio = [l for l in sel if " · espera:" in l or " · decisión-humana" in l or " · aparcado · " in l]
+    sel = prio + [l for l in sel if l not in prio]
+    return recorta(sel, todo, maximo)
 
 def con_flag(c):
     """Issues y PR abiertos con alguna flag en el repo del canal y en los de "repos" de la config.
@@ -539,9 +643,17 @@ def main():
     if cmd == "bandeja":
         st = estado(); nada = True
         try:
-            _, sha = registro(c)
-            if st.get("_registro") != sha:
-                print("REGISTRO CAMBIADO: hay decisiones nuevas o cambiadas. Léelas antes de actuar: equipo.py decisiones")
+            texto, sha = registro(c)
+            visto = st.get("_registro")
+            if visto != sha:
+                viejo = None
+                if visto:
+                    try: viejo = version(c, visto)
+                    except Exception: viejo = None
+                if viejo is None:
+                    for l in primera_vez(texto): print(l)
+                else:
+                    for l in aviso_registro(viejo, texto): print(l)
                 st["_registro"] = sha; json.dump(st, open(EST, "w"))
         except Exception as e:
             print("AVISO: no puedo leer %s (%s). Hoy solo lees: no pidas decisiones ni fusiones." % (REGISTRO, e))
@@ -621,13 +733,43 @@ def main():
                 else: print("ya existe", nombre)
     elif cmd == "decisiones":
         filtro = _plano(" ".join(ARGS[1:]))
+        hist = c.get("registro_historico", HISTORICO)
+        maximo = int(c.get("max_decisiones", MAX_DECISIONES))
+        vivas = 0
         try:
             texto, _ = registro(c)
-            print("== %s (vivas; lo sustituido no sale)" % REGISTRO)
-            for l in texto.splitlines():
-                if l.startswith("- ") and "· sustituido" not in l and (not filtro or filtro in _plano(l)): print(l)
+            if TODO:
+                todas, _ = elige(texto.splitlines(), filtro, True)
+                sel, pags = pagina(todas, PAGINA); vivas = len(todas)
+                print("== %s (vivas; lo sustituido no sale) · página %d de %d" % (REGISTRO, min(PAGINA, pags or 1), pags))
+                for l in sel: print(l)
+                if PAGINA < pags: print("… sigue con --todo --pagina %d. Lee solo si lo necesitas: casi siempre basta un tema." % (PAGINA + 1))
+            else:
+                sel, fuera = elige(texto.splitlines(), filtro, False, maximo); vivas = len(sel)
+                print("== %s (vivas; lo sustituido no sale)" % REGISTRO)
+                for l in sel: print(l)
+                if fuera: print("… %d línea(s) más. Afina el texto (casi siempre basta) o pásalas por páginas con --todo." % fuera)
         except Exception as e:
             print("AVISO: no puedo leer %s (%s). Hoy solo lees: no pidas decisiones ni fusiones." % (REGISTRO, e))
+        if filtro and (SOLO_HIST or not vivas):
+            try:
+                texto_h, _ = registro(c, hist)
+                todas = [l for l in lineas_registro(texto_h) if filtro in _plano(l)]   # aquí también lo sustituido
+                if TODO:
+                    sel, pags = pagina(todas, PAGINA); fuera = 0
+                    print("== %s (histórico; puede no valer ya, manda lo vivo) · página %d de %d" % (hist, min(PAGINA, pags or 1), pags))
+                    if PAGINA < pags: fuera = -1
+                else:
+                    sel, fuera = recorta(todas, False, maximo)
+                    print("== %s (histórico: crónica cumplida o sustituida; puede no valer ya, manda lo vivo)" % hist)
+                for l in sel: print(l)
+                if not sel: print("(nada con ese texto)")
+                if fuera > 0: print("… %d línea(s) más con --todo (por páginas)." % fuera)
+                if fuera < 0: print("… sigue con --todo --pagina %d." % (PAGINA + 1))
+            except urllib.error.HTTPError as e:
+                if e.code != 404: print("AVISO: no puedo leer %s (%s)" % (hist, e))
+            except Exception as e:
+                print("AVISO: no puedo leer %s (%s)" % (hist, e))
         print("== Issues y PR abiertos con flag")
         for i in con_flag(c):
             labs = [l["name"] for l in i["labels"] if l["name"] in ESTADOS + ["decisión-humana"]]
@@ -649,8 +791,11 @@ def main():
         cab, resto = texto.split(seccion, 1)
         resto = resto.lstrip("\n")   # sección vacía: deja la línea en blanco antes del título siguiente
         texto = cab + seccion + "\n\n" + nueva + "\n" + ("\n" if resto.startswith("#") else "") + resto
-        api(c, "PUT", "/contents/" + REGISTRO, {"message": "Decisión (%s): %s" % (yo, linea[:60]), "sha": sha,
+        d, _ = api(c, "PUT", "/contents/" + REGISTRO, {"message": "Decisión (%s): %s" % (yo, linea[:60]), "sha": sha,
             "content": base64.b64encode(texto.encode()).decode()})
+        st = estado(); nuevo_sha = (d.get("content") or {}).get("sha")
+        if nuevo_sha and st.get("_registro") == sha:   # ya habías leído todo lo de antes: tu línea no te vuelve como aviso
+            st["_registro"] = nuevo_sha; json.dump(st, open(EST, "w"))
         print("APUNTADO", nueva)
     elif cmd == "flag":
         url, ref = objetivo(c, ARGS[1]); f = ARGS[2]; quitar = len(ARGS) > 3 and ARGS[3] == "quitar"

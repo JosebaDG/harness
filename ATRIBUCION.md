@@ -62,6 +62,10 @@ SOFTWARE.
 
 De su skill `pr` no tomamos los resúmenes visuales, que el propio repo atribuye a la skill `show-me` de Dex Horthy (HumanLayer, MIT).
 
+## Tipografía de la web
+
+Archivo, SIL OFL 1.1. La web usa la fuente [Archivo](https://github.com/Omnibus-Type/Archivo), de The Archivo Project Authors, con licencia SIL Open Font License 1.1. Su aviso completo va junto a la fuente, en `web/fuentes/OFL.txt`.
+
 ## Lo que no viene de fuera
 
 El protocolo, el registro de decisiones, los turnos, las fichas, las lecciones y las herramientas salen del trabajo de nuestro propio equipo.
