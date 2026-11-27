@@ -3,6 +3,11 @@
 Uso:
   python3 web/generar.py            reescribe web/ con lo que hay en el repo
   python3 web/generar.py --comprobar  sale con 1 si web/ no está al día
+                                      (páginas que faltan, distintas o huérfanas)
+
+Páginas huérfanas: los .html de web/ que ya no salen de ningún .md, por ejemplo
+al renombrar o quitar un archivo. Al generar se borran; solo dentro de web/ y
+solo .html, que aquí los escribe todos el generador. Nada fuera de web/.
 
 Lee web/sitio.json (título, secciones y archivos) y escribe una página HTML por
 cada archivo Markdown, más la portada y una página por sección. No inventa
@@ -636,6 +641,12 @@ def generar():
     return salida
 
 
+def huerfanas(salida):
+    """Los .html de web/ que el generador ya no produce."""
+    return sorted(p.relative_to(WEB).as_posix() for p in WEB.rglob("*.html")
+                  if p.is_file() and p.relative_to(WEB).as_posix() not in salida)
+
+
 def main():
     salida = generar()
     comprobar = "--comprobar" in sys.argv
@@ -647,15 +658,27 @@ def main():
             if not comprobar:
                 destino.parent.mkdir(parents=True, exist_ok=True)
                 destino.write_text(contenido, encoding="utf-8")
+    sobran = huerfanas(salida)
     if comprobar:
-        if cambios:
-            print("web/ no está al día con los .md (%d páginas). Ejecuta: python3 web/generar.py" % len(cambios))
+        if cambios or sobran:
+            print("web/ no está al día con los .md (%d páginas, %d huérfanas). Ejecuta: python3 web/generar.py"
+                  % (len(cambios), len(sobran)))
             for c in cambios[:20]:
                 print("  " + c)
+            for c in sobran[:20]:
+                print("  sobra " + c)
             sys.exit(1)
         print("web/ al día: %d páginas" % len(salida))
     else:
-        print("%d páginas, %d cambiadas" % (len(salida), len(cambios)))
+        for ruta in sobran:
+            p = WEB / ruta
+            p.unlink()
+            # Quita las carpetas que se quedan vacías, sin salir de web/.
+            d = p.parent
+            while d != WEB and WEB in d.parents and not any(d.iterdir()):
+                d.rmdir()
+                d = d.parent
+        print("%d páginas, %d cambiadas, %d huérfanas borradas" % (len(salida), len(cambios), len(sobran)))
 
 
 if __name__ == "__main__":
