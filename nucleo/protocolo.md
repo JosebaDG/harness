@@ -110,7 +110,8 @@ Reglas:
 
 ## Resiliencia
 
-- **Al arrancar una rutina:** si la bandeja dice `REGISTRO CAMBIADO`, se lee `decisiones` antes de nada.
+- **Al arrancar una rutina:** si la bandeja dice `REGISTRO CAMBIADO`, se leen las líneas nuevas que trae el aviso antes de nada. No se relee el registro entero: lo demás ya se leyó. Solo si el aviso no tiene la versión anterior se lee una vez con `decisiones --todo`.
+- **Leer poco:** `decisiones <tema>` enseña como mucho 20 líneas (lo que espera a la persona primero). Si no hay nada vivo, busca en el histórico. Con `--todo` sale todo y con `--historico` se busca siempre también en el histórico.
 - **Archivo de estado:** cada agente con trabajos largos lleva uno propio (objetivo, a medias, siguiente paso). Lo decidido no va ahí, va al registro.
 - **Al volver de una tarea larga:** se apunta lo que se decidió dentro y se relee el registro del tema al que se vuelve.
 - **Tras perder la memoria o la máquina:** primero el registro y los hilos abiertos, luego el archivo de estado. Lo que solo estaba en la máquina o en un chat se trata como no decidido y se confirma con la persona en una línea.

@@ -122,5 +122,28 @@ comprueba("tablón: el issue Tablón propio se reconoce", eq.es_tablero(c, tab),
 comprueba("tablón: un Tablón de fuera no", eq.es_tablero(c, msg("x", title="Tablón", login="alguien")), False)
 comprueba("tablón: el título sale de la config si está", eq.es_tablero(dict(c, tablero_titulo="Panel"), msg("x", title="Panel")), True)
 
+# Registro cambiado: bandeja enseña solo lo nuevo, no el archivo entero.
+reg2 = reg + "- 2030-01-13 · decidido · Pruebas: corren en cada PR · Ana · [#5](https://github.com/persona-ejemplo/canal/issues/5) · Lucia: nada\n"
+av = eq.aviso_registro(reg, reg2)
+comprueba("registro: el aviso trae solo la línea nueva", [l.strip()[:30] for l in av[1:]], ["- 2030-01-13 · decidido · Prue"])
+comprueba("registro: el aviso no copia lo ya leído", any("Licencia: MIT" in l for l in av), False)
+reg3 = reg.replace("dar el sí al PR", "dar el sí al PR #9")
+comprueba("registro: una línea cambiada sale entera", any("dar el sí al PR #9" in l for l in eq.aviso_registro(reg, reg3)), True)
+movido = reg.replace("## Vivas\n", "## Vivas\n" + "- 2030-01-10 · espera:lucia · Web: elegir el tema · Lucia; apunta Ana · [#3](https://github.com/persona-ejemplo/canal/issues/3) · Lucia: elegir entre claro y oscuro\n").replace("## Esperan a Lucia\n- 2030-01-10 · espera:lucia · Web: elegir el tema · Lucia; apunta Ana · [#3](https://github.com/persona-ejemplo/canal/issues/3) · Lucia: elegir entre claro y oscuro\n", "## Esperan a Lucia\n")
+comprueba("registro: mover una línea de sección no avisa", eq.aviso_registro(reg, movido)[0].startswith("REGISTRO CAMBIADO: ninguna"), True)
+muchas = reg + "".join("- 2030-02-%02d · decidido · Tema %d · Ana · x · Lucia: nada\n" % (i, i) for i in range(1, 21))
+av = eq.aviso_registro(reg, muchas, maximo=5)
+comprueba("registro: el aviso tiene tope y dice cómo ver el resto", (len(av), "--todo" in av[-1]), (7, True))
+
+# decisiones: tope de salida, lo que espera a la persona primero.
+lineas = muchas.splitlines()
+sel, fuera = eq.elige(lineas, "", maximo=5)
+comprueba("decisiones: tope de líneas", (len(sel), fuera), (5, 18))
+comprueba("decisiones: lo que espera a la persona sale primero", "espera:lucia" in sel[0], True)
+comprueba("decisiones: --todo enseña todo", eq.elige(lineas, "", todo=True, maximo=5)[1], 0)
+comprueba("decisiones: tope de caracteres", eq.recorta(["x" * 4000] * 3, caracteres=6000), (["x" * 4000], 2))
+comprueba("decisiones: siempre sale al menos una", len(eq.recorta(["x" * 9000], caracteres=6000)[0]), 1)
+comprueba("decisiones: lo sustituido no sale", any("algo viejo" in l for l in eq.elige(lineas, "", todo=True)[0]), False)
+
 print("fallos: %d" % fallos)
 sys.exit(1 if fallos else 0)
